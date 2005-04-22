@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: Latin-1 -*-
 import sys,os
-import DocXMLRPCServer
+import AmarokXMLRPCServer
 
 from Amarok import Amarok
 
@@ -13,7 +13,7 @@ PORT = 8888
 def main():
 
     amarok = Amarok()
-    srv = DocXMLRPCServer.DocXMLRPCServer(('',PORT))
+    srv = AmarokXMLRPCServer.AmarokXMLRPCServer(('',PORT))
     srv.register_instance(amarok)
     os.system("kdialog --msgbox 'started'")
     srv.serve_forever()

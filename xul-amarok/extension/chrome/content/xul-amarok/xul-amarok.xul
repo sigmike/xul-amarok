@@ -1,14 +1,15 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://global/skin" type="text/css"?>
+<?xml-stylesheet href="chrome://xul-amarok/skin/xul-amarok.css" type="text/css"?>
 
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         title="AmaroK XUL Interface"
         id="xul-amarok-main-window"
         width="800"
         height="600"
-        >
+        onload="onLoad();">
 
-<script type="application/x-javascript" src="xul-amarok.js"/>
+    <script type="application/x-javascript" src="chrome://xul-amarok/content/xul-amarok.js"/>
 
 <hbox flex="1">
 
@@ -26,17 +27,16 @@
             <tree flex="1" id="collectionBrowser"  hidecolumnpicker="true">
                 <treecols>
                         <treecol id="artist" label="Artist / Album" flex="1" 
-                                    primary="true" persist="width ordinal hidden"/>
+                            primary="true" persist="width ordinal hidden"/>
                 </treecols>
                 <treechildren flex="1"/>
-            
             </tree>
         </vbox>
-</tabpanels>
+    </tabpanels>
 </tabbox>
 
 <splitter collapse="before" persist="state">
-<grippy/>
+    <grippy/>
 </splitter>
 
 <vbox flex="2" >
@@ -64,13 +64,14 @@
         </treecols>
         <treechildren flex="1" />
     </tree>
+
     <hbox pack="end">
-        <button id="prev" oncommand="prev()" image="../../skin/classic/xul-amarok/buttons/b_prev.png" />
-        <button id="play" oncommand="play()" image="../../skin/classic/xul-amarok/buttons/b_play.png" />
-        <button id="pause" oncommand="pause()" image="../../skin/classic/xul-amarok/buttons/b_pause.png"  />
-        <button id="stop" oncommand="stop()" image="../../skin/classic/xul-amarok/buttons/b_stop.png"  />
-        <button id="next" oncommand="next()" image="../../skin/classic/xul-amarok/buttons/b_next.png"  />
-        <button id="next" oncommand="refreshAll()" label="U" />
+        <button id="prev" oncommand="prev()" image="chrome://xul-amarok/skin/buttons/b_prev.png" />
+        <button id="play" oncommand="play()" image="chrome://xul-amarok/skin/buttons/b_play.png" />
+        <button id="pause" oncommand="pause()" image="chrome://xul-amarok/skin/buttons/b_pause.png"  />
+        <button id="stop" oncommand="stop()" image="chrome://xul-amarok/skin/buttons/b_stop.png"  />
+        <button id="next" oncommand="next()" image="chrome://xul-amarok/skin/buttons/b_next.png"  />
+        <button id="update" oncommand="getPlaylist()" label="U" />
         <button id="volDown" oncommand="volumeDown()" label="V-" />
         <button id="volUp" oncommand="volumeUp()" label="V+" />
         <button id="volumeLabel" label="" />
@@ -85,6 +86,4 @@
     <statusbarpanel label="0:00:00"  pack="end"  />
 </statusbar>
 
-
-<script>refreshAll();</script>
 </window>
