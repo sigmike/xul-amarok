@@ -50,16 +50,32 @@ class Amarok:
         return pydcop.anyAppCalled("amarok").player.getVolume()
     
     
-    def artists(self):
-        query = "select distinct name from artist order by name"
+    def artists(self,search):
+        query = """select distinct ar.name from artist ar, tags t 
+        				where t.artist = ar.id and ar.name like '%%%s%%'
+        				order by ar.name""" % search
+        				
+        print query
         artists = pydcop.anyAppCalled("amarok").collection.query(query)
         return artists
     
+    def albums(self,artist):
+        query = """select distinct al.name from album al, artist ar, tags t 
+        				where t.artist = ar.id and t.album = al.id and ar.name = '%s'
+        				order by al.name""" % artist
+        print query
+        albums = pydcop.anyAppCalled("amarok").collection.query(query)
+        return albums
     
     
-    
-    
-    
+    def tracks(self,artist,album):
+        query = """select distinct t.title from album al, artist ar, tags t 
+        				where t.artist = ar.id and t.album = al.id 
+        					and ar.name = '%s' and al.name = '%s'
+        				order by al.name""" % (artist,album)
+        print query
+        tracks = pydcop.anyAppCalled("amarok").collection.query(query)
+        return tracks
     
     
     

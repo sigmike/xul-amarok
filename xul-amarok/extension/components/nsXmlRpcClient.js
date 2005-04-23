@@ -106,7 +106,12 @@ nsXmlRpcClient.prototype = {
     _status: null,
     _listener: null,
 
+
+
+
+
     asyncCall: function(listener, context, methodName, methodArgs, count) {
+    	
         debug('asyncCall');
         // Check for call in progress.
         if (this._inProgress)

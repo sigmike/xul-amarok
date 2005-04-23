@@ -9,7 +9,12 @@
         height="600"
         onload="onLoad();">
 
-    <script type="application/x-javascript" src="chrome://xul-amarok/content/xul-amarok.js"/>
+<script type="application/x-javascript" src="chrome://xul-amarok/content/xml-rpc.js"/>
+<script type="application/x-javascript" src="chrome://xul-amarok/content/player.js"/>
+<script type="application/x-javascript" src="chrome://xul-amarok/content/playlist.js"/>
+<script type="application/x-javascript" src="chrome://xul-amarok/content/collectionBrowser.js"/>
+<script type="application/x-javascript" src="chrome://xul-amarok/content/handlers.js"/>
+
 
 <hbox flex="1">
 
@@ -23,8 +28,8 @@
         <browser id="contextBrowser"/>
 
         <vbox>
-            <textbox id="collectionFilter" onclick="getArtists();"/>
-            <tree flex="1" id="collectionBrowser"  hidecolumnpicker="true">
+            <textbox id="collectionFilter" oninput="getArtists(this.value);"/>
+            <tree flex="1" id="collectionBrowser" hidecolumnpicker="true">
                 <treecols>
                         <treecol id="artist" label="Artist / Album" flex="1" 
                             primary="true" persist="width ordinal hidden"/>
