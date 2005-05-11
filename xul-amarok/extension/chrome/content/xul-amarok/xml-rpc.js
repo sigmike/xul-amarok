@@ -1,27 +1,20 @@
 
-function getClient() {
-    dump("getClient\n");
-    // Enable correct security
-    netscape.security.PrivilegeManager.enablePrivilege(
-            'UniversalXPConnect UniversalBrowserAccess');
+function getClient() 
+{
     return Components.classes['@mozilla.org/xml-rpc/client;1'].createInstance(
             Components.interfaces.nsIXmlRpcClient);
 }
 
+var host;
+var port;
 
 
-
-var xmlRpcClient;
-
-
-function getXmlRpc() {
-    dump("getXmlRpc\n");
-    //if (!xmlRpcClient) {
-        xmlRpcClient = getClient();
-    //}
-
-    // Initialize the client with the URL
-    xmlRpcClient.init('http://localhost:8888');
-
+function getXmlRpc()
+{
+	if (!host || !port) configure();
+	
+	var xmlRpcClient = getClient();
+	xmlRpcClient.init('http://'+host+':'+port);
+	
     return xmlRpcClient;
 }

@@ -1,35 +1,46 @@
 <?xml version="1.0"?>
-<?xml-stylesheet href="chrome://global/skin" type="text/css"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://xul-amarok/skin/xul-amarok.css" type="text/css"?>
 
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        title="AmaroK XUL Interface"
+        title="AmaroK remote"
         id="xul-amarok-main-window"
         width="800"
         height="600"
         onload="onLoad();">
+        
+        
+
+<script src="chrome://global/content/nsDragAndDrop.js"/>
+<script src="chrome://global/content/nsTransferable.js"/>
+
 
 <script type="application/x-javascript" src="chrome://xul-amarok/content/xml-rpc.js"/>
 <script type="application/x-javascript" src="chrome://xul-amarok/content/player.js"/>
 <script type="application/x-javascript" src="chrome://xul-amarok/content/playlist.js"/>
 <script type="application/x-javascript" src="chrome://xul-amarok/content/collectionBrowser.js"/>
 <script type="application/x-javascript" src="chrome://xul-amarok/content/handlers.js"/>
-
+<script type="application/x-javascript" src="chrome://xul-amarok/content/dragndrop.js"/>
 
 <hbox flex="1">
 
 <tabbox id="lefttabs" flex="1" orient="vertical">
     <tabs orient="horizontal">
-        <tab id="contexttab"  label="Context"/>
+       <!-- <tab id="contexttab"  label="Context"/> -->
         <tab id="collectiontab"  label="Collection"/>
     </tabs>
     <tabpanels flex="1">
 
-        <browser id="contextBrowser"/>
+       <!--  <browser id="contextBrowser"/> -->
 
         <vbox>
             <textbox id="collectionFilter" oninput="getArtists(this.value);"/>
-            <tree flex="1" id="collectionBrowser" hidecolumnpicker="true">
+            <tree flex="1" 
+            	id="collectionBrowser" 
+            	hidecolumnpicker="true" 
+            	ondraggesture="nsDragAndDrop.startDrag(event,collectionObserver)"
+            	seltype="multiple">
+            	
                 <treecols>
                         <treecol id="artist" label="Artist / Album" flex="1" 
                             primary="true" persist="width ordinal hidden"/>
@@ -45,7 +56,12 @@
 </splitter>
 
 <vbox flex="2" >
-    <tree id="playlist" ondblclick="playTrack(this.currentIndex)" flex="2" enableColumnDrag="true">
+    <tree id="playlist"
+    	ondblclick="playTrack(this.currentIndex)"
+    	 ondragover="nsDragAndDrop.dragOver(event,playlistObserver)"
+  		 ondragdrop="nsDragAndDrop.drop(event,playlistObserver)"
+   		 flex="2" enableColumnDrag="true">
+   		 
         <treecols>
             <treecol id="Title" label="Title" flex="2" persist="width ordinal hidden"/>
             <splitter class="tree-splitter"/>
@@ -67,28 +83,37 @@
             <splitter class="tree-splitter"/>
             <treecol id="Score" label="Score" flex="1" persist="width ordinal hidden"/>
         </treecols>
-        <treechildren flex="1" />
+        <treechildren flex="1"   />
     </tree>
 
-    <hbox pack="end">
-        <button id="prev" oncommand="prev()" image="chrome://xul-amarok/skin/buttons/b_prev.png" />
-        <button id="play" oncommand="play()" image="chrome://xul-amarok/skin/buttons/b_play.png" />
-        <button id="pause" oncommand="pause()" image="chrome://xul-amarok/skin/buttons/b_pause.png"  />
-        <button id="stop" oncommand="stop()" image="chrome://xul-amarok/skin/buttons/b_stop.png"  />
-        <button id="next" oncommand="next()" image="chrome://xul-amarok/skin/buttons/b_next.png"  />
-        <button id="update" oncommand="getPlaylist()" label="U" />
-        <button id="volDown" oncommand="volumeDown()" label="V-" />
-        <button id="volUp" oncommand="volumeUp()" label="V+" />
-        <button id="volumeLabel" label="" />
-    </hbox>
+	<hbox>
+		<hbox flex="1" pack="start">
+		<button id="prev" oncommand="prev()" label="Prev" />
+	        <button id="play" oncommand="play()" label="Play" />
+	        <button id="pause" oncommand="pause()" label="Pause"  />
+	        <button id="stop" oncommand="stop()" label="Stop"  />
+	        <button id="next" oncommand="next()" label="Next"  />
+	        
+	        
+	    	
+	    </hbox>
+	    	
+	    <hbox flex="1" pack="end">
+	    	<button id="partymode" class="disabled" oncommand="togglePartyMode()" tooltiptext="Toggle Party mode" label="P" />
+	        <button id="clear" oncommand="clearPlaylist()" tooltiptext="Empty playlist" label="Clear" />
+	    	<button id="update" oncommand="refresh()" tooltiptext="Refresh playlist" label="Refresh" />
+	        <button id="config" oncommand="configure()" tooltiptext="Setup" label="Setup" />
+	    </hbox>
+	</hbox>
 </vbox>
 
 </hbox>
 
 
 <statusbar id="status" persist="collapsed">
-    <statusbarpanel id="statusMessage" label="status message " flex="1" />
-    <statusbarpanel label="0:00:00"  pack="end"  />
+    <statusbarpanel id="statusMessage" label="Stopped" flex="2" />
+    <progressmeter id="progressBar" flex="1" onclick="seekTo(event)"/>
+    <progressmeter id="volumeBar" onclick="setVolume(event)"/>
 </statusbar>
 
 </window>

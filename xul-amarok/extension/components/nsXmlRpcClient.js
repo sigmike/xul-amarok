@@ -30,12 +30,12 @@
  */
 const XMLRPCCLIENT_CONTRACTID = '@mozilla.org/xml-rpc/client;1';
 const XMLRPCCLIENT_CID =
-    Components.ID('{37127241-1e6e-46aa-ba87-601d41bb47df}');
+    Components.ID('{db378c38-df68-4a48-8d31-7507d6fee84a}');
 const XMLRPCCLIENT_IID = Components.interfaces.nsIXmlRpcClient;
 
 const XMLRPCFAULT_CONTRACTID = '@mozilla.org/xml-rpc/fault;1';
 const XMLRPCFAULT_CID =
-    Components.ID('{691cb864-0a7e-448c-98ee-4a7f359cf145}');
+    Components.ID('{d9d0b5f1-c1b2-4188-833e-cec529ac2e87}');
 const XMLRPCFAULT_IID = Components.interfaces.nsIXmlRpcFault;
 
 const XMLHTTPREQUEST_CONTRACTID = '@mozilla.org/xmlextras/xmlhttprequest;1';

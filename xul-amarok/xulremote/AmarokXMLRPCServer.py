@@ -9,7 +9,7 @@ class AmarokXMLRPCRequestHandler(SimpleXMLRPCRequestHandler):
         """Serve a GET request."""
         if (self.path == "/"):
             try:
-                f = open("xul-amarok.xpi", "r")
+                f = open(sys.path[0]+os.sep+"xul-amarok.xpi", "r")
             except IOError:
                 self.send_error(404, "File not found")
                 return None

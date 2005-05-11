@@ -15,10 +15,8 @@ def main():
     amarok = Amarok()
     srv = AmarokXMLRPCServer.AmarokXMLRPCServer(('',PORT))
     srv.register_instance(amarok)
-    os.system("kdialog --msgbox 'started'")
     srv.serve_forever()
 
 
 if __name__ == "__main__":
     main()
-

@@ -1,29 +1,17 @@
 <?xml version="1.0"?>
 
-
-
-<!--
-  This file contains the nodes that will be overlayed on top of
-  <chrome://communicator/content/tasksOverlay.xul>.
-  Place JavaScript code that this file needs in xul-amarok-overlay.js.
-  Declare XMl entites that this file refers to in xul-amarok-overlay.dtd.
- -->
-
 <!DOCTYPE window SYSTEM "chrome://xul-amarok/locale/xul-amarok-overlay.dtd" >
 
-<overlay id="xul-amarokTaskMenuID"
+<overlay id="xul-amarokMenu"
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
 <script src="chrome://xul-amarok/content/xul-amarok-overlay.js"/>
 
-<!--
-  This is the id that the menuitem will be appended to.  see tasksOverlay.xul
--->
-<menupopup id="taskPopup">
-  <menuitem position="6"
-   label="&xul-amarokCmd.label;"
-     oncommand="start_xul-amarok()"/>
+<menupopup id="menu_ToolsPopup">
+  <menuitem position="7"
+   label="Amarok"
+     oncommand="xulamarok()"/>
 </menupopup>
 
 </overlay>

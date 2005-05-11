@@ -1,0 +1,43 @@
+==================================================================
+                      AmaroK XUL Remote 0.2
+==================================================================
+
+This software enables you to control AmaroK from any Firefox browser.
+
+When running, simply point your Firefox browser to http://host:8888/
+and install the extension. (where host is the host running the script)
+
+Then restart Firefox and launch the extension via the Tools menu.
+
+NOTES
+-----
+The following features are working:
+- basic player manipulation: play, pause, stop, next, previous, seek, volume
+- playlist view, plays a track when clicking on it
+- collection browser with filtering, drag and drop tracks to the playlist
+- a switch for enabling party mode
+
+REQUIREMENTS
+------------
+- python 2.3
+- pydcop (python DCOP bindings) python-dcop package on Debian, libkdec1 on Mandrake
+- AmaroK 1.2.3
+- Firefox 1.x (tested on 1.0.3)
+
+TODO
+----
+- remove tracks from playlist: no DCOP call to do this yet
+- drag and drop albums and artists
+- context browser
+- make distinction between compilations and albums in the collection browser
+
+This script is a XML-RPC server, it talks with the extension via XML-RPC, and with AmaroK via DCOP.
+It also serves the Firefox extension when receiving a HTTP GET request.
+
+LICENSE
+-------
+GPL V2
+
+AUTHOR
+------
+Author: Matthieu Bedouet < mbedouet at gmail dot com >

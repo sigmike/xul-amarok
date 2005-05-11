@@ -3,27 +3,54 @@
 
 
 function getPlaylist()
-{dump("getPlaylist\n");
-    // Enable correct security
-    netscape.security.PrivilegeManager.enablePrivilege(
-            'UniversalXPConnect UniversalBrowserAccess');
+{
     var xmlRpcClient = getXmlRpc();
+    xmlRpcClient.asyncCall(playlistHandler, null, 'getPlaylist', [], 0);
+}
 
-    xmlRpcClient.asyncCall(getPlaylistHandler, null, 'getPlaylist', [], 0);
+function clearPlaylist()
+{
+    var xmlRpcClient = getXmlRpc();
+    xmlRpcClient.asyncCall(playlistHandler, null, 'clearPlaylist', [], 0);
+}
+
+
+function addTracks(urls)
+{
+    if (urls.length == 0) return false;
+
+    var xmlRpcClient = getXmlRpc();
+	
+	var urlsParam = xmlRpcClient.createType(xmlRpcClient.ARRAY,{});
+
+	for (var i=0; i<urls.length ; i++) {
+    	var url = xmlRpcClient.createType(xmlRpcClient.STRING,{});
+        url.data = urls[i];
+    	urlsParam.AppendElement(url);
+	}
+
+	try {
+   		xmlRpcClient.asyncCall(playlistHandler, null, 'addMediaList', [urlsParam], 1);
+
+	} catch(e) {
+		alert('ERROR asyncCall');
+    	DUMP_obj (urlsParam);
+    	DUMP_obj (e);
+	}
+    return true;
 }
 
 
 
-
-/**
-* Handler for the getPlaylist function
-*/
-var getPlaylistHandler = {
+var playlistHandler = {
 
     onResult: function(client, ctxt, result) {
         var playlistXml = result.QueryInterface(
             Components.interfaces.nsISupportsCString);
-        refreshPlaylist(result);
+           
+        var dom = new DOMParser();
+    	var pl = dom.parseFromString (playlistXml,"application/xml");
+        refreshPlaylist(pl);
 	},
 	onFault: function (client, ctxt, fault) {
 		alert('getPlaylistHandler XML-RPC Fault: '+fault);
@@ -36,23 +63,19 @@ var getPlaylistHandler = {
 
 
 
+var playlistView=null;
 
-function refreshPlaylist(xlpPl)
+function refreshPlaylist(pl)
 {
-    dump("refreshPlaylist\n");
-    var dom = new DOMParser();
-    var pl = dom.parseFromString (xlpPl,"application/xml");
     var tracks = pl.getElementsByTagName('item');
 
-    var treeView = {
+    playlistView = {
         rowCount : tracks.length,
         getCellText : function(row,column){
-
             var track = tracks[row];
             fieldElmts = track.getElementsByTagName(column);
             if (fieldElmts.length == 1) return fieldElmts[0].firstChild.nodeValue;
             else return "";
-
         },
         setTree: function(treebox){ this.treebox = treebox; },
         isContainer: function(row){ return false; },
@@ -62,19 +85,29 @@ function refreshPlaylist(xlpPl)
         getImageSrc: function(row,col){ return null; },
         getRowProperties: function(row,props){},
         getCellProperties: function(row,col,props){},
-        getColumnProperties: function(colid,col,props){}
+        getColumnProperties: function(colid,col,props){},
+
     };
-    document.getElementById('playlist').view = treeView;
+    document.getElementById('playlist').view = playlistView;
     
+    //set active track and update status bar
     for (i=0; i<tracks.length; i++) {
         var track = tracks[i];
-        if (track.getAttribute('queue_index') == '0') {
-            document.getElementById('playlist').view.selection.select(i);
-        }
+        if (track.getAttribute('queue_index') == '0') setPlaying(i);
     }
     
     return true;
 }
+
+
+
+function setPlaying(idx)
+{
+	playlistView.selection.select(idx);
+	updateStatus(playlistView.getCellText(idx,'Artist') + ' / ' + playlistView.getCellText(idx,'Title'));
+}
+
+
 
 
 

@@ -5,10 +5,10 @@
     
     <Description about="urn:mozilla:install-manifest">
         <em:creator>Matthieu Bedouet</em:creator>
-        <em:description>Control AmaroK from your remote Firefox.</em:description>
+        <em:description>Control AmaroK from Firefox.</em:description>
         <em:id>{f15335f2-25d7-4628-9078-e4e53e08a559}</em:id>
         <em:name>AmaroK XUL Interface</em:name>
-        <em:version>0.1</em:version>
+        <em:version>0.2</em:version>
         <em:file>
             <Description about="urn:mozilla:extension:file:xul-amarok.jar">
                 <em:locale>locale/en-US/xul-amarok/</em:locale>
@@ -23,5 +23,10 @@
                 <em:minVersion>1.0</em:minVersion>
             </Description>
         </em:targetApplication>
+        <em:optionsURL>chrome://xul-amarok/content/settings.xul</em:optionsURL>
+        <em:iconURL>chrome://xul-amarok/skin/images/amarok.png</em:iconURL>
     </Description>
 </RDF>
+
+
+
