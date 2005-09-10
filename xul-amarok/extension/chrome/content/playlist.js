@@ -73,7 +73,7 @@ function refreshPlaylist(pl)
         rowCount : tracks.length,
         getCellText : function(row,column){
             var track = tracks[row];
-            fieldElmts = track.getElementsByTagName(column);
+            fieldElmts = track.getElementsByTagName(column.id);
             if (fieldElmts.length == 1) return fieldElmts[0].firstChild.nodeValue;
             else return "";
         },
@@ -85,8 +85,7 @@ function refreshPlaylist(pl)
         getImageSrc: function(row,col){ return null; },
         getRowProperties: function(row,props){},
         getCellProperties: function(row,col,props){},
-        getColumnProperties: function(colid,col,props){},
-
+        getColumnProperties: function(colid,col,props){}
     };
     document.getElementById('playlist').view = playlistView;
     
@@ -104,7 +103,15 @@ function refreshPlaylist(pl)
 function setPlaying(idx)
 {
 	playlistView.selection.select(idx);
-	updateStatus(playlistView.getCellText(idx,'Artist') + ' / ' + playlistView.getCellText(idx,'Title'));
+	
+	//display artist/track in the status bar
+	artistCol=document.getElementById('Artist');
+	titleCol=document.getElementById('Title');
+	albumCol=document.getElementById('Album');
+	var message = 'Playing '+ playlistView.getCellText(idx,titleCol)
+	message += ' by ' + playlistView.getCellText(idx,artistCol)
+	message += ' on ' + playlistView.getCellText(idx,albumCol)
+	updateStatus(message);
 }
 
 

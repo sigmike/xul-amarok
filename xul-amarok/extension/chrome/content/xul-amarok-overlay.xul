@@ -10,7 +10,7 @@
 
 <menupopup id="menu_ToolsPopup">
   <menuitem position="7"
-   label="Amarok"
+   label="Amarok remote"
      oncommand="xulamarok()"/>
 </menupopup>
 

@@ -6,7 +6,6 @@ var timerObj;
 var loaded=false;
 function onLoad()
 {
-    dump("onLoad\n");
     //avoid onload to be fired 2 times
     if (!loaded ) {
     	getPrefs();
@@ -20,7 +19,6 @@ function onLoad()
 
 function refresh()
 {
-	dump('refresh\n');
 	getPlaylist();
 	getTime();
 	getVolume();
@@ -35,8 +33,6 @@ function setTimer()
 	 	notify:function (timer) {
 	 		//following code will be executed every 10 secs:
 	 		refresh();
-	 		
-	 		
 	 	} 
 	} 
 	
@@ -53,7 +49,8 @@ function configure()
                   "chrome,modal",getPrefs);
 }
 
-
+var host;
+var port;
 function getPrefs()
 {
 	try {

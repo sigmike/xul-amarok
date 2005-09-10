@@ -151,6 +151,7 @@ function initCollectionBrowser(artists)
 		    for (var t = row - 1 ; t >= 0 ; t--) {
 		      	if (this.getLevel(t) < thisLevel) return t;
 		    }
+		    return false;
         },
         
         hasNextSibling: function(idx, after) {
@@ -160,6 +161,7 @@ function initCollectionBrowser(artists)
 		      if (nextLevel == thisLevel) return true;
 		      else if (nextLevel < thisLevel) return false;
 		    }
+		    return false;
         },
         
    

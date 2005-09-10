@@ -6,10 +6,8 @@ cd extension/chrome
 
 find content locale skin  -path '*.svn*' -prune -o -print -type f | zip xul-amarok.jar -@
 
-
-#zip -r xul-amarok.jar content locale skin
 cd ..
 
 [ -e ../xulremote/xul-amarok.xpi ] && rm -f ../xulremote/xul-amarok.xpi
-zip -r ../xulremote/xul-amarok.xpi chrome/xul-amarok.jar components/* install.*
+zip -r ../xulremote/xul-amarok.xpi chrome/xul-amarok.jar components/* install.rdf chrome.manifest
 rm -f chrome/xul-amarok.jar

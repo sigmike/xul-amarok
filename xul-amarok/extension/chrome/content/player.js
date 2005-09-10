@@ -64,40 +64,6 @@ var playerHandler = {
  
 
 
-
-function togglePartyMode()
-{
-    var xmlRpcClient = getXmlRpc();
-    xmlRpcClient.asyncCall(togglePartyModeHandler, null, 'togglePartyMode', null, 0);
-}
-
-
-
-var togglePartyModeHandler = {
-
-    onResult: function(client, action, result) {
-
-        status = result.QueryInterface(
-            Components.interfaces.nsISupportsPRBool);
-		button=document.getElementById('partymode');
-		if (status == 'true') button.setAttribute('class','enabled');
-		else button.setAttribute('class','disabled');
-		
-	},
-	onFault: function (client, ctxt, fault) {
-		alert('ERROR: '+fault);
-	},
-	onError: function (client, ctxt, status, errorMsg) {
-		alert('togglePartyMode Error: '+errorMsg);
-	}
-};
- 
-
-
-
-
-
-
 function getTime()
 {
     var xmlRpcClient = getXmlRpc();

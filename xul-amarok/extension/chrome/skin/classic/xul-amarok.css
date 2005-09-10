@@ -1,13 +1,17 @@
 
-button {
-	width: 40px;
-	max-width: 50px;
-	border: none;
+
+/* playlist */
+
+#Track {
+	text-align: center;	
+}
+#Length {
+	text-align: right;	
 }
 
+/* toolbar */
 
-
-button label{
+toolbarbutton label{
 	display: none;
 }
 
@@ -41,13 +45,4 @@ button label{
 #update {
 	list-style-image: url('chrome://xul-amarok/skin/buttons/playlist_reload.png');
 }
-
-#partymode.enabled {
-	list-style-image: url('chrome://xul-amarok/skin/buttons/party_on.png');
-}
-
-#partymode.disabled {
-	list-style-image: url('chrome://xul-amarok/skin/buttons/party_off.png');
-}
-
 

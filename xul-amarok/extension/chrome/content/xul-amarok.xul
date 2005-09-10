@@ -55,56 +55,51 @@
     <grippy/>
 </splitter>
 
-<vbox flex="2" >
+<vbox flex="2">
     <tree id="playlist"
     	ondblclick="playTrack(this.currentIndex)"
-    	 ondragover="nsDragAndDrop.dragOver(event,playlistObserver)"
-  		 ondragdrop="nsDragAndDrop.drop(event,playlistObserver)"
-   		 flex="2" enableColumnDrag="true">
+    	ondragover="nsDragAndDrop.dragOver(event,playlistObserver)"
+		ondragdrop="nsDragAndDrop.drop(event,playlistObserver)"
+		flex="3" enableColumnDrag="true">
    		 
-        <treecols>
+		<treecols>
+            <treecol id="Track" label="Track" flex="1" persist="width ordinal hidden"/>
+            <splitter class="tree-splitter"/>
             <treecol id="Title" label="Title" flex="2" persist="width ordinal hidden"/>
             <splitter class="tree-splitter"/>
             <treecol id="Artist" label="Artist" flex="2" persist="width ordinal hidden"/>
             <splitter class="tree-splitter"/>
             <treecol id="Album" label="Album" flex="2" persist="width ordinal hidden"/>
             <splitter class="tree-splitter"/>
-            <treecol id="Year" label="Year" flex="1" persist="width ordinal hidden"/>
-            <splitter class="tree-splitter"/>
             <treecol id="Genre" label="Genre" flex="1" persist="width ordinal hidden"/>
             <splitter class="tree-splitter"/>
-            <treecol id="TrackNo" label="Track" flex="1" persist="width ordinal hidden"/>
+            <treecol id="Comment" label="Comment" flex="1" persist="width ordinal hidden"/>
             <splitter class="tree-splitter"/>
-            <treecol id="Directory" label="Directory" flex="3" persist="width ordinal hidden"/>
+            <treecol id="Year" label="Year" flex="1" persist="width ordinal hidden"/>
             <splitter class="tree-splitter"/>
             <treecol id="Length" label="Length" flex="1" persist="width ordinal hidden"/>
             <splitter class="tree-splitter"/>
             <treecol id="Bitrate" label="Bitrate" flex="1" persist="width ordinal hidden"/>
-            <splitter class="tree-splitter"/>
-            <treecol id="Score" label="Score" flex="1" persist="width ordinal hidden"/>
         </treecols>
-        <treechildren flex="1"   />
+        <treechildren flex="1" />
     </tree>
 
-	<hbox>
-		<hbox flex="1" pack="start">
-		<button id="prev" oncommand="prev()" label="Prev" />
-	        <button id="play" oncommand="play()" label="Play" />
-	        <button id="pause" oncommand="pause()" label="Pause"  />
-	        <button id="stop" oncommand="stop()" label="Stop"  />
-	        <button id="next" oncommand="next()" label="Next"  />
-	        
-	        
-	    	
-	    </hbox>
-	    	
-	    <hbox flex="1" pack="end">
-	    	<button id="partymode" class="disabled" oncommand="togglePartyMode()" tooltiptext="Toggle Party mode" label="P" />
-	        <button id="clear" oncommand="clearPlaylist()" tooltiptext="Empty playlist" label="Clear" />
-	    	<button id="update" oncommand="refresh()" tooltiptext="Refresh playlist" label="Refresh" />
-	        <button id="config" oncommand="configure()" tooltiptext="Setup" label="Setup" />
-	    </hbox>
-	</hbox>
+	
+	<toolbox>
+		<toolbar pack="end">
+		    <toolbarbutton id="prev" oncommand="prev()" tooltiptext="Previous track" label="Prev" />
+		    <toolbarbutton id="play" oncommand="play()" tooltiptext="Play" label="Play" />
+		    <toolbarbutton id="pause" oncommand="pause()" tooltiptext="Pause" label="Pause"  />
+	        <toolbarbutton id="stop" oncommand="stop()" tooltiptext="Stop" label="Stop"  />
+	        <toolbarbutton id="next" oncommand="next()" tooltiptext="Next track" label="Next"  />
+
+	        <toolbarbutton id="clear" oncommand="clearPlaylist()" tooltiptext="Clear playlist" label="Clear" />
+	    	<toolbarbutton id="update" oncommand="refresh()" tooltiptext="Refresh playlist" label="Refresh" />
+	        <toolbarbutton id="config" oncommand="configure()" tooltiptext="Setup" label="Setup" />
+		</toolbar>
+	</toolbox>
+	
+	
 </vbox>
 
 </hbox>
@@ -112,8 +107,8 @@
 
 <statusbar id="status" persist="collapsed">
     <statusbarpanel id="statusMessage" label="Stopped" flex="2" />
-    <progressmeter id="progressBar" flex="1" onclick="seekTo(event)"/>
-    <progressmeter id="volumeBar" onclick="setVolume(event)"/>
+    <progressmeter id="progressBar" tooltiptext="Seek" flex="1" onclick="seekTo(event)"/>
+    <progressmeter id="volumeBar" tooltiptext="Volume" onclick="setVolume(event)"/>
 </statusbar>
 
 </window>

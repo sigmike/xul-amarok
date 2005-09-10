@@ -5,13 +5,10 @@ function getClient()
             Components.interfaces.nsIXmlRpcClient);
 }
 
-var host;
-var port;
-
 
 function getXmlRpc()
 {
-	if (!host || !port) configure();
+	if (!host || !port) return false;
 	
 	var xmlRpcClient = getClient();
 	xmlRpcClient.init('http://'+host+':'+port);
