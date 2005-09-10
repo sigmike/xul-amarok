@@ -11,25 +11,27 @@ Then restart Firefox and launch the extension via the Tools menu.
 
 NOTES
 -----
-The following features are working:
+THIS RELEASE WON'T WORK WITH FIREFOX 1.0.x
+
+FEATURES
+--------
 - basic player manipulation: play, pause, stop, next, previous, seek, volume
 - playlist view, plays a track when clicking on it
-- collection browser with filtering, drag and drop tracks to the playlist
-- a switch for enabling party mode
+- collection browser with filtering, support for compilations
+- drag and drop tracks from the collection to the playlist
 
 REQUIREMENTS
 ------------
 - python 2.3
-- pydcop (python DCOP bindings) python-dcop package on Debian, libkdec1 on Mandrake
-- AmaroK 1.2.3
-- Firefox 1.x (tested on 1.5 beta1)
+- pydcop (python DCOP bindings), included in kdebindings
+- AmaroK 1.3
+- Firefox deer park (tested 1.5 beta1)
 
 TODO
 ----
 - remove tracks from playlist: no DCOP call to do this yet
 - drag and drop albums and artists
 - context browser
-- make distinction between compilations and albums in the collection browser
 
 This script is a XML-RPC server, it talks with the extension via XML-RPC, and with AmaroK via DCOP.
 It also serves the Firefox extension when receiving a HTTP GET request.

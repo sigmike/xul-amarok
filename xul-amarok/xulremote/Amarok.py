@@ -97,11 +97,11 @@ class Amarok:
     
     def addMediaList(self,urls):
         #does not work?
-        pydcop.anyAppCalled("amarok").playlist.addMediaList(urls)
+        #pydcop.anyAppCalled("amarok").playlist.addMediaList(urls)
         
         #workaround:
-        #for url in urls:
-        #    pydcop.anyAppCalled("amarok").playlist.addMedia(url)
+        for url in urls:
+            pydcop.anyAppCalled("amarok").playlist.addMedia(url)
             
         time.sleep(0.3)
         return self.getPlaylist()
@@ -128,31 +128,45 @@ class Amarok:
     #============== COLLECTION ==================
     
     def artists(self,search):
-        query = """select distinct ar.name from artist ar, tags t 
-                    where t.artist = ar.id and ar.name like '%%%s%%'
-                    order by ar.name""" % search
+        query = """SELECT DISTINCT artist.name 
+                       FROM tags INNER JOIN artist ON artist.id=tags.artist  
+                       WHERE tags.sampler = 0 and artist.name like '%%%s%%'
+                       ORDER BY LOWER( artist.name )""" % search
         artists = pydcop.anyAppCalled("amarok").collection.query(query)
+        artists.append('Various artists')
         artists.sort(lambda x, y: cmp(string.lower(x), string.lower(y)))
         return [escape(artist) for artist in artists]
-    
+
+   
     def albums(self,artist):
-        query = """select distinct al.name from album al, artist ar, tags t 
+
+        if artist == 'Various artists':
+            query= """SELECT DISTINCT album.name 
+                        FROM tags INNER JOIN album ON album.id=tags.album INNER JOIN year ON year.id=tags.year
+                        WHERE tags.sampler = 1  ORDER BY LOWER( album.name )"""
+        else:
+            query = """select distinct al.name from album al, artist ar, tags t 
                     where t.artist = ar.id and t.album = al.id and ar.name = '%s'
                     order by al.name""" % artist
+
         albums = pydcop.anyAppCalled("amarok").collection.query(query)
         return [escape(album) for album in albums]
     
     
     def tracks(self,artist,album):
-        query = """select distinct t.title, t.url from album al, artist ar, tags t 
+        if artist == 'Various artists':
+            query = """SELECT DISTINCT tags.title,tags.url
+                        FROM tags INNER JOIN album ON album.id=tags.album INNER JOIN artist ON artist.id=tags.artist INNER JOIN year ON year.id=tags.year 
+                        WHERE tags.sampler = 1 AND album.name = '%s'
+                        ORDER BY tags.track""" % album
+        else:
+            query = """select distinct t.title, t.url from album al, artist ar, tags t 
                     where t.artist = ar.id and t.album = al.id 
                         and ar.name = '%s' and al.name = '%s'
                     order by t.track""" % (artist,album)
         tracks = pydcop.anyAppCalled("amarok").collection.query(query)
         return [escape(track) for track in tracks]
-     
-    def togglePartyMode(self):
-        status = pydcop.anyAppCalled("amarok").player.partyModeStatus()
-        pydcop.anyAppCalled("amarok").player.enablePartyMode(not status)
-        return not status
-    
+
+        
+        
+        
