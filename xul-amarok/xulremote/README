@@ -1,24 +1,34 @@
 ==================================================================
-                      AmaroK XUL Remote 0.3
+                      AmaroK XUL Remote 0.4
 ==================================================================
 
-This software enables you to control AmaroK from any Firefox browser.
+Control AmaroK from any Firefox browser on your network.
 
-When running, simply point your Firefox browser to http://host:8888/
-and install the extension. (where host is the host running the script)
+the script itself is a xml-rpc server which acts as a gateway 
+between amarok and the included firefox extension.
 
-Then restart Firefox and launch the extension via the Tools menu.
+
+INSTALL:
+- Download the archive, then install and run it with AmaroK script manager
+- with firefox, go to http://hostname:8888 , and install the extension
+- restart firefox
+- launch "AmaroK remote" in the firefox "Tools" menu.
+- the extension has 2 options: host and port, that's the same host (hostname) and port (8888)
+	you used to install the extension.
+
 
 NOTES
 -----
 THIS RELEASE WON'T WORK WITH FIREFOX 1.0.x
+
 
 FEATURES
 --------
 - basic player manipulation: play, pause, stop, next, previous, seek, volume
 - playlist view, plays a track when clicking on it
 - collection browser with filtering, support for compilations
-- drag and drop tracks from the collection to the playlist
+- drag and drop tracks, album and artists from the collection to the playlist
+
 
 REQUIREMENTS
 ------------
@@ -27,19 +37,39 @@ REQUIREMENTS
 - AmaroK 1.3
 - Firefox deer park (tested 1.5 beta1)
 
+
+CHANGELOG
+---------
+0.4 - 2005-10-16
+- drag and drop now works with albums and artists
+- support for special characters
+
+0.3 - 2005-09-10
+- support for firefox 1.5 (won't work anymore with 1.0.x)
+- use the new firefox preferences system
+- works with amaroK 1.3
+- better layout
+- collection browser handles compilations
+- dropped the Dynamic mode switch
+
+0.2 - 2005-05-03
+- Add a party mode enable/disable switch
+- corrected bugs in the collection browser
+- some cleanups
+
+
 TODO
 ----
+- use remote XUL instead of an extension 
 - remove tracks from playlist: no DCOP call to do this yet
-- drag and drop albums and artists
 - context browser
 
-This script is a XML-RPC server, it talks with the extension via XML-RPC, and with AmaroK via DCOP.
-It also serves the Firefox extension when receiving a HTTP GET request.
 
 LICENSE
 -------
 GPL V2
 
+
 AUTHOR
 ------
-Author: Matthieu Bedouet < mbedouet at gmail dot com >
+Matthieu Bedouet < mbedouet at gmail dot com >

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: Latin-1 -*-
+
 import sys,os
 import AmarokXMLRPCServer
 

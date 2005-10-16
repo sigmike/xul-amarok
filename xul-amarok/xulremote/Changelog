@@ -1,3 +1,6 @@
+0.4 - 2005-10-16
+- drag and drop now works with albums and artists
+- support for special characters
 
 0.3 - 2005-09-10
 - support for firefox 1.5 (won't work anymore with 1.0.x)

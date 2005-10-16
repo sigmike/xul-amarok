@@ -12,18 +12,17 @@ var collectionObserver = {
 		var numRanges = tree.view.selection.getRangeCount();
 
 		transferData.data= new TransferData();
-		var tracks = new Array();
+		var items = new Array();
 		
 		for (var t=0; t<numRanges; t++){
 			  tree.view.selection.getRangeAt(t,start,end);
 			  for (var v=start.value; v<=end.value; v++){
-			  	  var level = collectionView.getLevel(v);
-			  	  if (level == 2)  tracks.push(v);
+			  	  items.push(v);
 			  }
 		}
 
-		if (tracks.length == 0) return false;
-		transferData.data.addDataForFlavour('amarok/tracks',tracks);
+		if (items.length == 0) return false;
+		transferData.data.addDataForFlavour('amarok/browseritems',items);
 		
   }
 };
@@ -31,9 +30,10 @@ var collectionObserver = {
 
 
 var playlistObserver = {
-	  getSupportedFlavours : function () {
+	
+	getSupportedFlavours : function () {
 	    var flavours = new FlavourSet();
-	    flavours.appendFlavour('amarok/tracks');
+	    flavours.appendFlavour('amarok/browseritems');
 	    return flavours;
 	  },
 	  
@@ -42,14 +42,35 @@ var playlistObserver = {
 	onDrop: function (evt,dropdata,session){
 		
 		if (dropdata.data != "") {
-			var tracks = dropdata.data.split(',');
-			var urls=new Array();
-			for (var i=0; i<tracks.length; i++) {
-				var v = tracks[i];
-				var url = collectionView.visibleData[v][4];
-				urls.push(url);
+		
+			var items = dropdata.data.split(',');
+			var tracks=new Array();
+			var albums=new Array();
+			var artists=new Array();
+			
+			for (var i=0; i<items.length; i++) {
+			
+				var v = items[i];
+				
+				var level = collectionView.getLevel(v);
+			  	if (level == 2)  {
+					var url = collectionView.visibleData[v][4];
+					tracks.push(url);
+				}
+		    	if (level == 1)  {
+					var album = escape(collectionView.visibleData[v][0]);
+					albums.push(album);
+				}	
+				if (level == 0)  {
+					var artist = escape(collectionView.visibleData[v][0]);
+					artists.push(artist);
+				}
 			}
-			addTracks(urls);
+			
+			if (tracks.length) addTracks(tracks);
+			if (albums.length) addAlbums(albums);
+			if (artists.length) addArtists(artists);
+			
 		}
 		
 	}

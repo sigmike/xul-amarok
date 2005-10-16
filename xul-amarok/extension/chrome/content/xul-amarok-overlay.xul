@@ -9,8 +9,10 @@
 <script src="chrome://xul-amarok/content/xul-amarok-overlay.js"/>
 
 <menupopup id="menu_ToolsPopup">
-  <menuitem position="7"
+  <menuitem position="20"
    label="Amarok remote"
+   class="menuitem-iconic"
+   image="chrome://xul-amarok/skin/images/amarok_menu.png"
      oncommand="xulamarok()"/>
 </menupopup>
 

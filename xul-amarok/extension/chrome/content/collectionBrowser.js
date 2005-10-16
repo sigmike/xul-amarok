@@ -5,7 +5,7 @@ function getArtists(search)
     var xmlRpcClient = getXmlRpc();
     
     var searchParam = xmlRpcClient.createType(xmlRpcClient.STRING,{});
-    searchParam.data=search;
+    searchParam.data=escape(search);
     xmlRpcClient.asyncCall(getArtistsHandler, null, 'artists', [searchParam], 1);
 }
 
@@ -34,7 +34,7 @@ function getAlbums(artist)
     var xmlRpcClient = getXmlRpc();
     
     var artistParam = xmlRpcClient.createType(xmlRpcClient.STRING,{});
-    artistParam.data=artist;
+    artistParam.data=escape(artist);
     xmlRpcClient.asyncCall(getAlbumsHandler, null, 'albums', [artistParam], 1);
 }
 
@@ -70,9 +70,9 @@ function getTracks(artist,album)
     var xmlRpcClient = getXmlRpc();
     
     var artistParam = xmlRpcClient.createType(xmlRpcClient.STRING,{});
-    artistParam.data=artist;
+    artistParam.data=escape(artist);
     var albumParam = xmlRpcClient.createType(xmlRpcClient.STRING,{});
-    albumParam.data=album;
+    albumParam.data=escape(album);
     xmlRpcClient.asyncCall(getTracksHandler, null, 'tracks', [artistParam,albumParam], 2);
 }
 

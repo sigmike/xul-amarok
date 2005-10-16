@@ -1,8 +1,8 @@
 
-# -*- coding: Latin-1 -*-
 import sys,os
 import string
 import time
+from urllib import unquote
 from xml.sax.saxutils import escape
 
 try:
@@ -103,25 +103,29 @@ class Amarok:
         for url in urls:
             pydcop.anyAppCalled("amarok").playlist.addMedia(url)
             
-        time.sleep(0.3)
+        time.sleep(0.8)
         return self.getPlaylist()
 
 
   
-    def addAlbum(self,artist,album):
-        query = """select distinct t.url from album al, artist ar, tags t 
-                    where t.artist = ar.id and t.album = al.id 
-                        and ar.name = '%s' and al.name = '%s'
-                    order by t.track""" % (artist,album)
-        urls = pydcop.anyAppCalled("amarok").collection.query(query)
+    def addAlbums(self,albums):
+        urls=[]
+        for album in albums:
+            query = """select distinct t.url from album al, artist ar, tags t 
+                        where t.artist = ar.id and t.album = al.id 
+                            and  al.name = '%s'
+                        order by t.track""" % (unquote(album))
+            urls.extend(pydcop.anyAppCalled("amarok").collection.query(query))
         return self.addMediaList(urls)
 
-    def addArtist(self,artist):
-        query = """select distinct t.url from album al, artist ar, tags t 
-                    where t.artist = ar.id and t.album = al.id 
-                        and ar.name = '%s'
-                    order by al.name , t.track""" % (artist)
-        urls = pydcop.anyAppCalled("amarok").collection.query(query)
+    def addArtists(self,artists):
+        urls=[]
+        for artist in artists:
+            query = """select distinct t.url from album al, artist ar, tags t 
+                        where t.artist = ar.id and t.album = al.id 
+                            and ar.name = '%s'
+                        order by al.name , t.track""" % unquote(artist)
+            urls.extend(pydcop.anyAppCalled("amarok").collection.query(query))
         return self.addMediaList(urls)
 
     
@@ -131,7 +135,7 @@ class Amarok:
         query = """SELECT DISTINCT artist.name 
                        FROM tags INNER JOIN artist ON artist.id=tags.artist  
                        WHERE tags.sampler = 0 and artist.name like '%%%s%%'
-                       ORDER BY LOWER( artist.name )""" % search
+                       ORDER BY LOWER( artist.name )""" % unquote(search)
         artists = pydcop.anyAppCalled("amarok").collection.query(query)
         artists.append('Various artists')
         artists.sort(lambda x, y: cmp(string.lower(x), string.lower(y)))
@@ -139,32 +143,32 @@ class Amarok:
 
    
     def albums(self,artist):
-
-        if artist == 'Various artists':
+        if unquote(artist) == 'Various artists':
             query= """SELECT DISTINCT album.name 
                         FROM tags INNER JOIN album ON album.id=tags.album INNER JOIN year ON year.id=tags.year
                         WHERE tags.sampler = 1  ORDER BY LOWER( album.name )"""
         else:
             query = """select distinct al.name from album al, artist ar, tags t 
                     where t.artist = ar.id and t.album = al.id and ar.name = '%s'
-                    order by al.name""" % artist
+                    order by al.name""" % unquote(artist)
 
         albums = pydcop.anyAppCalled("amarok").collection.query(query)
         return [escape(album) for album in albums]
     
     
     def tracks(self,artist,album):
-        if artist == 'Various artists':
+        if unquote(artist) == 'Various artists':
             query = """SELECT DISTINCT tags.title,tags.url
                         FROM tags INNER JOIN album ON album.id=tags.album INNER JOIN artist ON artist.id=tags.artist INNER JOIN year ON year.id=tags.year 
                         WHERE tags.sampler = 1 AND album.name = '%s'
-                        ORDER BY tags.track""" % album
+                        ORDER BY tags.track""" % unquote(album)
         else:
             query = """select distinct t.title, t.url from album al, artist ar, tags t 
                     where t.artist = ar.id and t.album = al.id 
                         and ar.name = '%s' and al.name = '%s'
-                    order by t.track""" % (artist,album)
+                    order by t.track""" % (unquote(artist),unquote(album))
         tracks = pydcop.anyAppCalled("amarok").collection.query(query)
+        print tracks
         return [escape(track) for track in tracks]
 
         

@@ -42,6 +42,57 @@ function addTracks(urls)
 
 
 
+function addAlbums(albums)
+{
+    if (albums.length == 0) return false;
+
+    var xmlRpcClient = getXmlRpc();
+	
+	var albumsParam = xmlRpcClient.createType(xmlRpcClient.ARRAY,{});
+
+	for (var i=0; i<albums.length ; i++) {
+    	var album = xmlRpcClient.createType(xmlRpcClient.STRING,{});
+        album.data = albums[i];
+    	albumsParam.AppendElement(album);
+	}
+
+	try {
+   		xmlRpcClient.asyncCall(playlistHandler, null, 'addAlbums', [albumsParam], 1);
+
+	} catch(e) {
+		alert('ERROR asyncCall');
+    	DUMP_obj (urlsParam);
+    	DUMP_obj (e);
+	}
+    return true;
+}
+
+
+function addArtists(artists)
+{
+    if (artists == 0) return false;
+
+    var xmlRpcClient = getXmlRpc();
+	
+	var artistsParam = xmlRpcClient.createType(xmlRpcClient.ARRAY,{});
+
+	for (var i=0; i<artists.length ; i++) {
+    	var artist = xmlRpcClient.createType(xmlRpcClient.STRING,{});
+        artist.data = artists[i];
+    	artistsParam.AppendElement(artist);
+	}
+
+	try {
+   		xmlRpcClient.asyncCall(playlistHandler, null, 'addArtists', [artistsParam], 1);
+
+	} catch(e) {
+		alert('ERROR asyncCall');
+    	DUMP_obj (urlsParam);
+    	DUMP_obj (e);
+	}
+    return true;
+}
+
 var playlistHandler = {
 
     onResult: function(client, ctxt, result) {
