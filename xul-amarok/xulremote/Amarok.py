@@ -48,6 +48,9 @@ class Amarok:
         
     #seeking
     def seek(self,percent):
+        if pydcop.anyAppCalled("amarok").player.isPlaying() == 0:
+            return 0
+        
         ttime=pydcop.anyAppCalled("amarok").player.trackTotalTime()
         if ttime > 0:
             ctime = percent * ttime / 100
@@ -58,8 +61,10 @@ class Amarok:
     def trackTime(self):
         ctime=pydcop.anyAppCalled("amarok").player.trackCurrentTime()
         ttime=pydcop.anyAppCalled("amarok").player.trackTotalTime()
-        if ttime > 0: return (100 * ctime) / ttime
-        else: return 0
+        if ttime > 0 and ctime > 0:
+            return (100 * ctime) / ttime
+        else:
+            return 0
     
     #volume
     def volumeUp(self):
@@ -168,7 +173,6 @@ class Amarok:
                         and ar.name = '%s' and al.name = '%s'
                     order by t.track""" % (unquote(artist),unquote(album))
         tracks = pydcop.anyAppCalled("amarok").collection.query(query)
-        print tracks
         return [escape(track) for track in tracks]
 
         
