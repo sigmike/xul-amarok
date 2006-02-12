@@ -53,11 +53,22 @@ function refreshPlaylist(pl)
     playlistView = {
         rowCount : tracks.length,
         getCellText : function(row,column){
-            var track = tracks.item(row);
-            if (!track) return "";
-            fieldElmt = track.getElementsByTagName(column.id).item(0);
-            if (fieldElmt && fieldElmt.firstChild) return fieldElmt.firstChild.nodeValue;
-            else return "";
+        
+            if (!tracks.item(row)) return null;
+            var fieldElmt = tracks.item(row).getElementsByTagName(column.id).item(0);
+            
+            if (fieldElmt && fieldElmt.firstChild) {
+            
+            	if (column.id == 'Length') {
+            		var secs=fieldElmt.firstChild.nodeValue;
+            		var mins = parseInt(secs/60);
+            		secs= secs - 60 * mins;
+            		if (secs < 10) secs='0'+secs;
+            		return mins+':'+secs;
+            	}
+            	else return fieldElmt.firstChild.nodeValue;
+            }
+            else return null;
         },
         setTree: function(treebox){ this.treebox = treebox; },
         isContainer: function(row){ return false; },
@@ -87,17 +98,29 @@ function refreshPlaylist(pl)
 
 function setPlaying(idx)
 {
-	if (!playlistView.selection) return false;
+	if (!playlistView || !idx) {
+		document.getElementById('statusMessage').setAttribute('value','');
+		return false;
+	}
 	
 	playlistView.selection.select(idx);
 	
 	//display artist/track in the status bar
-	artistCol=document.getElementById('Artist');
 	titleCol=document.getElementById('Title');
+	title=playlistView.getCellText(idx,titleCol);
+	
+	artistCol=document.getElementById('Artist');
+	artist=playlistView.getCellText(idx,artistCol);
+	
 	albumCol=document.getElementById('Album');
-	var message = 'Playing '+ playlistView.getCellText(idx,titleCol)
-	message += ' by ' + playlistView.getCellText(idx,artistCol)
-	message += ' on ' + playlistView.getCellText(idx,albumCol)
+	album=playlistView.getCellText(idx,albumCol)
+	
+	if (!title) {
+		document.getElementById('statusMessage').setAttribute('value','');
+		return false;
+	}
+	
+	var message = 'Playing '+ title+' by '+ artist+' on ' + album;
 	document.getElementById('statusMessage').setAttribute('value',message);
 }
 

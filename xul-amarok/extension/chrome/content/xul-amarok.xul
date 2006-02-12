@@ -107,7 +107,7 @@
 
 <statusbar id="status" persist="collapsed">
     
-    <label id="statusMessage" value="Stopped" flex="2" />
+    <label id="statusMessage" value="" flex="2" />
 
     <label value="seek" />
     <vbox class="customSlider">
