@@ -55,7 +55,10 @@ function playerHandler(xml)
 }
 
 
-
+function viewCover()
+{
+	window.open("http://"+host+":"+port+"/image.png",'coverwindow','chrome=no,width=300,height=300,resizable,centerscreen');
+}
 
 
 function setVolume(vol)

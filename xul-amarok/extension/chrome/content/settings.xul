@@ -4,10 +4,10 @@
 <prefwindow id="xul-amarok-configure"
             xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
             title="AmaroK host setup"
-            windowtype="child">
-            
-<prefpane id="pane1" >
+            buttons="accept, cancel"
+            type="prefwindow" >
 
+<prefpane id="pane1" >
     <preferences>
       <preference id="host" name="amarok.host" type="string" instantApply="true"/>
       <preference id="port" name="amarok.port" type="string" instantApply="true"/>

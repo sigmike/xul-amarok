@@ -1,8 +1,16 @@
-0.6 - 2006-02-11
+0.6 - 2006-02-12
 - unicode support
-- reworked communication layer : uses AJAX instead of XML-RPC
-- new sliders for seek and volume, adapted from foxytunes (thanks to Alex Sirota)
-- amarok popup on new connections
+	due to some issues with unicode and pydcop, 
+	the command line dcop is used for some actions
+
+- reworked communication layer
+	uses AJAX instead of XML-RPC, which was designed for ascii
+
+- sliders for seek and volume
+	adapted from foxytunes (thanks to Alex Sirota)
+
+- amarok message on new connections
+- cover view
 
 0.5 - 2006-02-05
 - support for firefox 1.5.0.1

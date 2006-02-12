@@ -3,7 +3,7 @@
 
 function getArtists(search)
 {
-    amarokCall('artists','getArtistsHandler','search='+escape(search));
+    amarokCall('artists','getArtistsHandler','search='+encodeURIComponent(search));
 }
 
 
@@ -17,7 +17,7 @@ function getArtistsHandler(xml)
 function getAlbums(artist)
 {
     if (artist=='Unknown') artist='';
-	amarokCall('albums','getAlbumsHandler','artist='+escape(artist));
+	amarokCall('albums','getAlbumsHandler','artist='+encodeURIComponent(artist));
 }
 
 function getAlbumsHandler(xml)
@@ -41,7 +41,7 @@ function getAlbumsHandler(xml)
 function getTracks(artist,album)
 {
     if (album=='Unknown') album='';
-    amarokCall('tracks','getTracksHandler','artist='+escape(artist)+'&album='+escape(album));
+    amarokCall('tracks','getTracksHandler','artist='+encodeURIComponent(artist)+'&album='+encodeURIComponent(album));
 }
 
 function getTracksHandler(xml)
@@ -99,7 +99,7 @@ function initCollectionBrowser(artists)
   
         getCellValue : function (row,column) {return null;},
         getImageSrc: function(row,col){ return null; },
-        
+        cycleHeader: function cycleHeader(col, elem) { },
      
         getParentIndex: function(row) {
         	var thisLevel = this.getLevel(row);

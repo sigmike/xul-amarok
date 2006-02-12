@@ -4,10 +4,7 @@ import sys,os
 import string, codecs
 import time
 from urllib import unquote, quote
-#from xml.sax.saxutils import escape
-
 from re import escape
-
 from xml.dom.minidom import parse, parseString
 
 try:
@@ -84,9 +81,9 @@ class Amarok:
         return parseString("""<index position="%d">%d</index>""" % (pos,idx))
 
     
+    def coverImage(self):
+        return pydcop.anyAppCalled("amarok").player.coverImage()
 
-    
-    
     #volume
     def volumeUp(self):
         pydcop.anyAppCalled("amarok").player.volumeUp()
@@ -177,6 +174,22 @@ class Amarok:
     
     #============== COLLECTION ==================
     
+    def query(self,query):
+        
+        #print type(query), query
+
+        #DOES NOT WORK WITH UNICODE
+        #results = pydcop.anyAppCalled("amarok").collection.query(query)
+        
+        pp=os.popen("dcop amarok collection query \"%s\"" % query, 'r')
+        results=[]
+        for r in pp: 
+            r=r.strip('\n')
+            if r: results.append(r)
+        return results
+        
+        
+        
     def artists(self,search=''):
         query = """SELECT DISTINCT artist.name 
                        FROM tags INNER JOIN artist ON artist.id=tags.artist  
@@ -185,7 +198,8 @@ class Amarok:
             query += """and artist.name like '%%%s%%'""" % escape(search)
         query += " ORDER BY LOWER( artist.name )"
         
-        artists = pydcop.anyAppCalled("amarok").collection.query(query)
+        artists =self.query(query)
+        
         artists.append('Various artists')
         artists.sort(lambda x, y: cmp(string.lower(x), string.lower(y)))
        
@@ -199,6 +213,7 @@ class Amarok:
 
    
     def albums(self,artist):
+
         if artist == 'Various artists':
             query= """SELECT DISTINCT album.name 
                         FROM tags INNER JOIN album ON album.id=tags.album INNER JOIN year ON year.id=tags.year
@@ -207,9 +222,8 @@ class Amarok:
             query = """select distinct al.name from album al, artist ar, tags t 
                     where t.artist = ar.id and t.album = al.id and ar.name = '%s'
                     order by al.name""" % escape(artist)
-            #print query
-        
-        albums = pydcop.anyAppCalled("amarok").collection.query(query)
+
+        albums=self.query(query)
         
         domAlbums=parseString("<albums />")
         for album in albums:
@@ -219,8 +233,8 @@ class Amarok:
             domAlbums.documentElement.appendChild(domAlbum)
         return domAlbums
         
-    
-    
+
+
     def tracks(self,artist,album):
         if artist == 'Various artists':
             query = """SELECT DISTINCT tags.title,tags.url
@@ -232,9 +246,8 @@ class Amarok:
                     where t.artist = ar.id and t.album = al.id 
                         and ar.name = '%s' and al.name = '%s'
                     order by t.track""" % (escape(artist),escape(album))
-        #print query
-        
-        tracks = pydcop.anyAppCalled("amarok").collection.query(query)
+
+        tracks=self.query(query)
         
         domTracks=parseString("<tracks />")
         n=0

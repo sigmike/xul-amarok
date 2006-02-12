@@ -11,23 +11,49 @@ import inspect
 class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
-        """Serve  the extension"""
-        try:
-            f = open(sys.path[0]+os.sep+"xul-amarok.xpi", "r")
-        except IOError:
-            self.send_error(404, "File not found")
-            return None
-
-        (host, port) = self.client_address
-        (hostname, aliaslist, ipaddrlist) = socket.gethostbyaddr(host)
-        self.server.amarok.showMessage('XUL remote: Firefox extension install from %s' % hostname)
         
-        self.send_response(200)
-        self.send_header("Content-type", "application/x-xpinstall")
-        self.send_header("Content-Length", str(os.fstat(f.fileno())[6]))
-        self.end_headers()
-        shutil.copyfileobj(f, self.wfile)
-        f.close()
+        
+        if self.path== '/image.png':
+            imagePath=self.server.amarok.coverImage()
+            try:
+                f = open(imagePath, "r")
+            except IOError:
+                self.send_error(404, "File not found")
+                return None
+            
+            self.send_response(200)
+
+            self.send_header("Cache-control", "no-cache")
+            self.send_header("Cache-control", "no-store")
+            self.send_header("Pragma", "no-cache")
+            self.send_header("Expires", "0")
+            self.send_header("Content-type", "image/png")
+            self.send_header("Content-Length", str(os.fstat(f.fileno())[6]))
+            self.end_headers()
+            shutil.copyfileobj(f, self.wfile)
+            f.close()
+            
+            
+        else:
+        
+        
+            """Serve  the extension"""
+            try:
+                f = open(sys.path[0]+os.sep+"xul-amarok.xpi", "r")
+            except IOError:
+                self.send_error(404, "File not found")
+                return None
+    
+            (host, port) = self.client_address
+            (hostname, aliaslist, ipaddrlist) = socket.gethostbyaddr(host)
+            self.server.amarok.showMessage('XUL remote: Firefox extension install from %s' % hostname)
+            
+            self.send_response(200)
+            self.send_header("Content-type", "application/x-xpinstall")
+            self.send_header("Content-Length", str(os.fstat(f.fileno())[6]))
+            self.end_headers()
+            shutil.copyfileobj(f, self.wfile)
+            f.close()
 
 
     def do_POST(self):
@@ -55,11 +81,22 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
 
                 #execution
                 response=getattr(self.server.amarok, method)(*params)
-
-            except:
-                errmsg="error: %s" % sys.exc_info()[0]
+                
+            except UnicodeDecodeError, err:
+                errmsg="UnicodeDecodeError: %s" % err
                 self.send_error(500, errmsg)
                 print errmsg
+                raise
+            except RuntimeError, err:
+                errmsg="RuntimeError: %s" % err
+                self.send_error(500, errmsg)
+                print errmsg
+                raise
+            except:
+                errmsg = "Unexpected error: %s " % sys.exc_info()[0]
+                print errmsg
+                self.send_error(500, errmsg)
+                raise
 
             else:
                 dom = parseString('<response><method>%s</method></response>' % method )

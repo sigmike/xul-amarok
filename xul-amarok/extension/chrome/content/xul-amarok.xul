@@ -8,8 +8,6 @@
         width="800"
         height="600"
         onload="onLoad();">
-        
-        
 
 <script src="chrome://global/content/nsDragAndDrop.js"/>
 <script src="chrome://global/content/nsTransferable.js"/>
@@ -19,43 +17,33 @@
 <script type="application/x-javascript" src="chrome://xul-amarok/content/player.js"/>
 <script type="application/x-javascript" src="chrome://xul-amarok/content/playlist.js"/>
 <script type="application/x-javascript" src="chrome://xul-amarok/content/collectionBrowser.js"/>
-<script type="application/x-javascript" src="chrome://xul-amarok/content/handlers.js"/>
 <script type="application/x-javascript" src="chrome://xul-amarok/content/dragndrop.js"/>
+<script type="application/x-javascript" src="chrome://xul-amarok/content/handlers.js"/>
 
 <hbox flex="1">
 
-<tabbox id="lefttabs" flex="1" orient="vertical">
-    <tabs orient="horizontal">
-       <!-- <tab id="contexttab"  label="Context"/> -->
-        <tab id="collectiontab"  label="Collection"/>
-    </tabs>
-    <tabpanels flex="1">
+    <vbox flex="1">
+        <textbox id="collectionFilter" oninput="getArtists(this.value);"/>
+        <tree flex="1" 
+        	id="collectionBrowser" 
+        	hidecolumnpicker="true" 
+        	ondraggesture="nsDragAndDrop.startDrag(event,collectionObserver)"
+        	seltype="multiple">
+        	
+            <treecols>
+                <treecol id="artist" label="Artist / Album" flex="1" 
+                    primary="true" persist="width ordinal hidden"/>
+            </treecols>
+            <treechildren flex="1"/>
+        </tree>
+    </vbox>
 
-       <!--  <browser id="contextBrowser"/> -->
-
-        <vbox>
-            <textbox id="collectionFilter" oninput="getArtists(this.value);"/>
-            <tree flex="1" 
-            	id="collectionBrowser" 
-            	hidecolumnpicker="true" 
-            	ondraggesture="nsDragAndDrop.startDrag(event,collectionObserver)"
-            	seltype="multiple">
-            	
-                <treecols>
-                        <treecol id="artist" label="Artist / Album" flex="1" 
-                            primary="true" persist="width ordinal hidden"/>
-                </treecols>
-                <treechildren flex="1"/>
-            </tree>
-        </vbox>
-    </tabpanels>
-</tabbox>
 
 <splitter collapse="before" persist="state">
     <grippy/>
 </splitter>
 
-<vbox flex="2">
+<vbox flex="3">
     <tree id="playlist"
     	ondblclick="playTrack(this.currentIndex)"
     	ondragover="nsDragAndDrop.dragOver(event,playlistObserver)"
@@ -79,14 +67,24 @@
             <splitter class="tree-splitter"/>
             <treecol id="Length" label="Length" flex="1" persist="width ordinal hidden"/>
             <splitter class="tree-splitter"/>
-            <treecol id="Bitrate" label="Bitrate" flex="1" persist="width ordinal hidden"/>
+            <treecol id="Bitrate" label="Bitrate" hidden="true" flex="1" persist="width ordinal hidden"/>
+            <splitter class="tree-splitter"/>
+            <treecol id="Score" label="Score" hidden="true" flex="1" persist="width ordinal hidden"/>
+            <splitter class="tree-splitter"/>
+            <treecol id="Rating" label="Rating" hidden="true" flex="1" persist="width ordinal hidden"/>
+            <splitter class="tree-splitter"/>
+			<treecol id="Filename" label="Filename" hidden="true" flex="1" persist="width ordinal hidden"/>
+            <splitter class="tree-splitter"/>
+            <treecol id="Filesize" label="Filesize" hidden="true" flex="1" persist="width ordinal hidden"/>
         </treecols>
         <treechildren flex="1" />
     </tree>
 
 	
 	<toolbox>
+	
 		<toolbar pack="end">
+		    <toolbarbutton id="cover" oncommand="viewCover()" tooltiptext="View cover" label="Cover" />
 		    <toolbarbutton id="prev" oncommand="prev()" tooltiptext="Previous track" label="Prev" />
 		    <toolbarbutton id="play" oncommand="play()" tooltiptext="Play" label="Play" />
 		    <toolbarbutton id="pause" oncommand="pause()" tooltiptext="Pause" label="Pause"  />

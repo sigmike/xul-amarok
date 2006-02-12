@@ -81,7 +81,8 @@ function refreshPlaylist(pl)
         getRowProperties: function(row,props){},
         getCellProperties: function(row,col,props){},
         getColumnProperties: function(colid,col,props){},
-        getParentIndex: function(row) { return -1; }
+        getParentIndex: function(row) { return -1; },
+        cycleHeader: function cycleHeader(col, elem) { }
     };
     document.getElementById('playlist').view = playlistView;
     

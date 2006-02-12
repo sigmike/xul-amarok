@@ -1,21 +1,5 @@
 
 
-var timerObj;
-
-
-var loaded=false;
-function onLoad()
-{
-    //avoid onload to be fired 2 times
-    if (!loaded ) {
-    	getPrefs();
-    	getArtists("");
-    	refresh();
-    	//setTimer();
- 	}
-    loaded = true;
-}
-
 
 function refresh()
 {
@@ -26,9 +10,10 @@ function refresh()
 
 
 
+var timerObj;
+
 function setTimer()
 {
-    
     var callback = {
 	 	notify:function (timer) {
 	 		//following code will be executed every 10 secs:
@@ -42,27 +27,26 @@ function setTimer()
 }
 
 
-function configure()
+
+
+var loaded=false;
+function onLoad()
 {
-	//getPrefs() will be called on close
-	window.openDialog("chrome://xul-amarok/content/settings.xul","settings",
-                  "chrome,modal",getPrefs);
+    //avoid onload to be fired 2 times
+    if (!loaded ) {
+    	if (!checkPrefs()) return false;
+    	
+    	getArtists("");
+    	refresh();
+    	setTimer();
+ 	}
+    loaded = true;
 }
 
-var host;
-var port;
-function getPrefs()
+
+
+function configure()
 {
-	try {
-		var prefObj = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
-		var Branch = prefObj.getBranch("amarok.");
-		var prefHost = Branch.prefHasUserValue("host") && Branch.getCharPref("host"); 
-		var prefPort = Branch.prefHasUserValue("port") && Branch.getCharPref("port");
-	} catch(e) {}
-	
-	if (prefHost && prefPort) {
-		host=prefHost;
-		port=prefPort;
-	}
+	window.openDialog("chrome://xul-amarok/content/settings.xul","settings", "chrome,modal");
 }
 

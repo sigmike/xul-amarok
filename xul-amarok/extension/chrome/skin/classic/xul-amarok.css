@@ -15,9 +15,16 @@ toolbarbutton label{
 	display: none;
 }
 
+#cover {
+	list-style-image: url('chrome://xul-amarok/skin/buttons/photobook.png');
+}
+
+
 #prev {
 	list-style-image: url('chrome://xul-amarok/skin/buttons/player_start.png');
 }
+
+
 
 #next {
 	list-style-image: url('chrome://xul-amarok/skin/buttons/player_end.png');
