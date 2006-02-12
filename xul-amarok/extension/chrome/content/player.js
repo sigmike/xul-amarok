@@ -1,175 +1,79 @@
 
 
 
-
-
 function play()
 {
-    var xmlRpcClient = getXmlRpc();
-    xmlRpcClient.asyncCall(playerHandler, null, 'play', null, 0);
+	amarokCall('play','playerHandler','');
 }
 
 function playTrack(idx)
 {
-    var xmlRpcClient = getXmlRpc();
-
-    var idxParam = xmlRpcClient.createType(xmlRpcClient.INT,{});
-    idxParam.data=idx;
-    xmlRpcClient.asyncCall(playerHandler, null, 'playByIndex', [idxParam], 1);
+    amarokCall('playByIndex','playerHandler','idx='+idx);
 }
 
 function next()
 { 
-    var xmlRpcClient = getXmlRpc();
-    xmlRpcClient.asyncCall(playerHandler, null, 'next', null, 0);
+    amarokCall('next','playerHandler','');
 }
 
 function prev()
 { 
-    var xmlRpcClient = getXmlRpc();
-    xmlRpcClient.asyncCall(playerHandler, null, 'prev', null, 0);
+    amarokCall('prev','playerHandler','');
 }
 
 
 function pause()
 { 
-    var xmlRpcClient = getXmlRpc();
-    xmlRpcClient.asyncCall(playerHandler, null, 'pause', null, 0);
+    amarokCall('pause','playerHandler','');
 }
 
 function stop()
 {
-    var xmlRpcClient = getXmlRpc();
-    xmlRpcClient.asyncCall(playerHandler, null, 'stop', null, 0);
-}
- 
-var playerHandler = {
-
-    onResult: function(client, action, result) {
-
-        idx = result.QueryInterface(
-            Components.interfaces.nsISupportsPRInt32);
-		var pbar = document.getElementById('progressBar');
-        pbar.value='0';
-        setPlaying(idx.toString());
-
-	},
-	onFault: function (client, ctxt, fault) {
-		alert('playerHandler XML-RPC Fault: '+fault);
-	},
-	onError: function (client, ctxt, status, errorMsg) {
-		alert('playerHandler Error: '+errorMsg);
-	}
-};
- 
-
-
-function getTime()
-{
-    var xmlRpcClient = getXmlRpc();
-    xmlRpcClient.asyncCall(getTimeHandler, null, 'trackTime', null, 0);
+    amarokCall('stop','playerHandler','');
 }
 
 
-function seekTo(event)
+function seek(pos)
 {
-	var clickedAt = event.screenX;
-	var boxObj = document.getElementById('progressBar').boxObject;
-	var from = boxObj.screenX;
-	var width = boxObj.width;
+	amarokCall('seek','playerHandler','pos='+pos);
+}
+
+function getPlaying()
+{
+	amarokCall('getPlaying','playerHandler','');
+}
+
+
+function playerHandler(xml)
+{
+	elmt = xml.getElementsByTagName('index').item(0);
+	idx=elmt.firstChild.nodeValue;
+	pos = elmt.getAttribute('position');
 	
-	var pos =  (100 * (clickedAt - from) / width);
-	document.getElementById('progressBar').value=pos;
-	
-    var xmlRpcClient = getXmlRpc();
-    var posParam = xmlRpcClient.createType(xmlRpcClient.INT,{});
-    posParam.data=pos;
-    xmlRpcClient.asyncCall(getTimeHandler, null, 'seek', [posParam], 1);
-}
-
- 
-var getTimeHandler = {
-
-    onResult: function(client, ctxt, result) {
-        progress = result.QueryInterface(
-            Components.interfaces.nsISupportsPRInt32);
-            
-        var pbar = document.getElementById('progressBar');
-        pbar.value= progress.toString();
-        
-	},
-	onFault: function (client, ctxt, fault) {
-		alert('getTimeHandler XML-RPC Fault: '+fault);
-	},
-	onError: function (client, ctxt, status, errorMsg) {
-		alert('getTimeHandler Error: '+errorMsg);
-	}
-};
-
-
-
-
-
-
-
-
-function volumeUp()
-{
-    var xmlRpcClient = getXmlRpc();
-    xmlRpcClient.asyncCall(setVolumeHandler, null, 'volumeUp', null, 0);
-}
-
-function volumeDown()
-{
-    var xmlRpcClient = getXmlRpc();
-    xmlRpcClient.asyncCall(setVolumeHandler, null, 'volumeDown', null, 0);
+    var pbar = document.getElementById('progressBar').setAttribute('curpos',pos);
+    setPlaying(idx);
 }
 
 
-function setVolume(event)
+
+
+
+function setVolume(vol)
 {
-	var clickedAt = event.screenX;
-	var boxObj = document.getElementById('volumeBar').boxObject;
-	var from = boxObj.screenX;
-	var width = boxObj.width;
-	
-	var pos =  (100 * (clickedAt - from) / width);
-	document.getElementById('volumeBar').value=pos;
-   
-    var xmlRpcClient = getXmlRpc();
-    var posParam = xmlRpcClient.createType(xmlRpcClient.INT,{});
-    posParam.data=pos;
-    xmlRpcClient.asyncCall(setVolumeHandler, null, 'setVolume', [posParam], 1);
+	amarokCall('setVolume','setVolumeHandler','vol='+vol);
 }
 
 function getVolume()
 {
-    var xmlRpcClient = getXmlRpc();
-    xmlRpcClient.asyncCall(setVolumeHandler, null, 'getVolume', [], 0);
+	amarokCall('getVolume','setVolumeHandler','');
 }
 
-
-var setVolumeHandler = {
-
-    onResult: function(client, ctxt, result) {
-        volume = result.QueryInterface(
-            Components.interfaces.nsISupportsPRInt32);
-
-        document.getElementById('volumeBar').value=volume.toString();
-	},
-	onFault: function (client, ctxt, fault) {
-		alert('setVolumeHandler XML-RPC Fault: '+fault);
-	},
-	onError: function (client, ctxt, status, errorMsg) {
-		alert('setVolumeHandler Error: '+errorMsg);
-	}
-};
-
-
-function updateStatus(strStatus)
+function setVolumeHandler(xml)
 {
-    var statusElmt = document.getElementById('statusMessage');
-    statusElmt.setAttribute('label',strStatus);
-    return true;
+	volume = xml.getElementsByTagName('volume').item(0).firstChild.nodeValue;
+	document.getElementById('volumeBar').setAttribute('curpos', volume);
 }
+
+
+
 

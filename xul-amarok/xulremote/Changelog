@@ -1,3 +1,7 @@
+0.6 - 2006-02-11
+- unicode support
+- reworked communication layer : uses AJAX instead of XML-RPC
+
 0.5 - 2006-02-05
 - support for firefox 1.5.0.1
 

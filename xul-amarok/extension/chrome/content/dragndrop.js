@@ -67,8 +67,8 @@ var playlistObserver = {
 				}
 			}
 			
-			if (tracks.length) addTracks(tracks);
-			if (albums.length) addAlbums(albums);
+			if (tracks.length)  addTracks(tracks);
+			if (albums.length)  addAlbums(albums);
 			if (artists.length) addArtists(artists);
 			
 		}

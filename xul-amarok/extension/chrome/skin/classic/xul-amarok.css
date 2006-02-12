@@ -46,3 +46,55 @@ toolbarbutton label{
 	list-style-image: url('chrome://xul-amarok/skin/buttons/playlist_reload.png');
 }
 
+
+statusbar {
+	padding: 3px;
+}
+
+
+.customSlider {
+	margin-right: 8px;
+}
+
+.customSlider slider {
+	background-image: url("chrome://xul-amarok/skin/buttons/sliderBack.png") !important;
+	-moz-appearance: none !important;
+	background-repeat: repeat-x;
+	width: 100px;
+    height: 10px !important;
+}
+
+.customSlider slider thumb {
+    -moz-appearance: none !important;
+    width: 14px; 
+    height: 10px !important;
+    background: none;
+    background-color: #EFF5FB;
+    -moz-border-bottom-colors: rgb(113, 111, 100) rgb(172, 168, 153);
+    -moz-border-left-colors: rgb(241, 239, 226) rgb(255, 255, 255);
+    -moz-border-right-colors: rgb(113, 111, 100) rgb(172, 168, 153);
+    -moz-border-top-colors: rgb(241, 239, 226) rgb(255, 255, 255);
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-style: solid;
+    border-bottom-style: solid;
+    border-left-style: solid;
+    border-right-style: solid;
+
+    min-height: 8px !important;
+    min-width: 0px !important;
+}
+
+.customSlider slider thumb[orient="horizontal"] {
+    min-height: 8px !important;
+    min-width: 0px !important;
+}
+
+.customSlider slider thumb > gripper {
+    -moz-appearance: none !important;
+    background-color: #EFF5FB;
+    border: none;
+}
+

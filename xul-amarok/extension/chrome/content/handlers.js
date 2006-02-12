@@ -11,7 +11,7 @@ function onLoad()
     	getPrefs();
     	getArtists("");
     	refresh();
-    	setTimer();
+    	//setTimer();
  	}
     loaded = true;
 }
@@ -20,7 +20,7 @@ function onLoad()
 function refresh()
 {
 	getPlaylist();
-	getTime();
+	getPlaying();
 	getVolume();
 }
 

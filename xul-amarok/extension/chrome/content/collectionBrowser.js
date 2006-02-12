@@ -1,110 +1,66 @@
 
 
+
 function getArtists(search)
 {
-    var xmlRpcClient = getXmlRpc();
-    
-    var searchParam = xmlRpcClient.createType(xmlRpcClient.STRING,{});
-    searchParam.data=escape(search);
-    xmlRpcClient.asyncCall(getArtistsHandler, null, 'artists', [searchParam], 1);
+    amarokCall('artists','getArtistsHandler','search='+escape(search));
 }
 
-var getArtistsHandler = {
 
-    onResult: function(client, ctxt, result) {
-            var artists = result.QueryInterface(
-                Components.interfaces.nsISupportsArray);
-            initCollectionBrowser(artists);
-	},
-	onFault: function (client, ctxt, fault) {
-		alert('getArtistsHandler XML-RPC Fault: '+fault);
-	},
-	onError: function (client, ctxt, status, errorMsg) {
-		alert('getArtistsHandler Error: '+errorMsg);
-	}
-};
-
-
-
-
+function getArtistsHandler(xml)
+{
+	 var artists = xml.getElementsByTagName('artist');
+	 initCollectionBrowser(artists);
+}
 
 
 function getAlbums(artist)
 {
-    var xmlRpcClient = getXmlRpc();
-    
-    var artistParam = xmlRpcClient.createType(xmlRpcClient.STRING,{});
-    artistParam.data=escape(artist);
-    xmlRpcClient.asyncCall(getAlbumsHandler, null, 'albums', [artistParam], 1);
+    if (artist=='Unknown') artist='';
+	amarokCall('albums','getAlbumsHandler','artist='+escape(artist));
 }
 
-var getAlbumsHandler = {
+function getAlbumsHandler(xml)
+{
+	var idx = collectionView.currentIdx;
 
-    onResult: function(client, ctxt, result) {
-    	var idx = collectionView.currentIdx;
+    var albums = xml.getElementsByTagName('album');
 
-        var albums = result.QueryInterface(
-            Components.interfaces.nsISupportsArray);
-
-		for (var i = 0; i < albums.Count(); i++) {
-			album = albums.QueryElementAt(i, Components.interfaces.nsISupportsCString);
-			collectionView.visibleData.splice(idx + i + 1, 0, [album.toString(), 1,true, false,null]);
-		}
-
-		collectionView.rowCount=collectionView.visibleData.length;
-		collectionView.treeBox.rowCountChanged(idx + 1, albums.Count());
-            
-	},
-	onFault: function (client, ctxt, fault) {
-		alert('getAlbumsHandler XML-RPC Fault: '+fault);
-	},
-	onError: function (client, ctxt, status, errorMsg) {
-		alert('getAlbumsHandler Error: '+errorMsg);
+	for (var i = 0; i < albums.length; i++) {
+		if (albums.item(i).firstChild) album = albums.item(i).firstChild.nodeValue;
+		else album='Unknown';
+		collectionView.visibleData.splice(idx + i + 1, 0, [album, 1,true, false,null]);
 	}
-};
+
+	collectionView.rowCount=collectionView.visibleData.length;
+	collectionView.treeBox.rowCountChanged(idx + 1, albums.length);
+}
 
 
 
 function getTracks(artist,album)
 {
-    var xmlRpcClient = getXmlRpc();
-    
-    var artistParam = xmlRpcClient.createType(xmlRpcClient.STRING,{});
-    artistParam.data=escape(artist);
-    var albumParam = xmlRpcClient.createType(xmlRpcClient.STRING,{});
-    albumParam.data=escape(album);
-    xmlRpcClient.asyncCall(getTracksHandler, null, 'tracks', [artistParam,albumParam], 2);
+    if (album=='Unknown') album='';
+    amarokCall('tracks','getTracksHandler','artist='+escape(artist)+'&album='+escape(album));
 }
 
-var getTracksHandler = {
+function getTracksHandler(xml)
+{
+	var idx = collectionView.currentIdx ;
 
-    onResult: function(client, ctxt, result) {
-    	var idx = collectionView.currentIdx ;
+    var tracks = xml.getElementsByTagName('track');
 
-        var tracks = result.QueryInterface(
-            Components.interfaces.nsISupportsArray);
+	for (var i=0; i < tracks.length; i++) {
+		var trackElmt = tracks.item(i);
+		var track=trackElmt.firstChild.nodeValue;
+		var url=trackElmt.getAttribute('url');
+		
+		collectionView.visibleData.splice(idx + 1 + i , 0, [track, 2, false, false, url]);
 
-		var nb=0;
-		for (var i=0; i < tracks.Count(); i++) {
-			if (i == 0 || i % 2 == 0) track = tracks.QueryElementAt(i, Components.interfaces.nsISupportsCString);
-			else {
-				url = tracks.QueryElementAt(i, Components.interfaces.nsISupportsCString);
-				nb++;
-				collectionView.visibleData.splice(idx + nb  , 0, [track.toString(), 2, false, false, url]);
-			}
-		}
-		collectionView.rowCount=collectionView.visibleData.length;
-		collectionView.treeBox.rowCountChanged(idx + 1, nb);
-            
-	},
-	onFault: function (client, ctxt, fault) {
-		alert('getTracksHandler XML-RPC Fault: '+fault);
-	},
-	onError: function (client, ctxt, status, errorMsg) {
-		alert('getTracksHandler Error: '+errorMsg);
 	}
-};
-
+	collectionView.rowCount=collectionView.visibleData.length;
+	collectionView.treeBox.rowCountChanged(idx + 1, tracks.length);
+}
 
 
 var initData = [];
@@ -112,11 +68,11 @@ var collectionView=null;
 
 function initCollectionBrowser(artists)
 {
-
 	initData = [];
-	for (i=0; i < artists.Count(); i++) {
-        var artist = artists.QueryElementAt(i, Components.interfaces.nsISupportsCString);
-        initData[i] = [artist.toString(),0, true,false,null];
+	for (i=0; i < artists.length; i++) {
+		if (artists.item(i).firstChild) var artist = artists.item(i).firstChild.nodeValue;
+		else var artist='unknown';
+        initData[i] = [artist,0, true,false,null];
     }
 	
     collectionView = {
@@ -139,8 +95,8 @@ function initCollectionBrowser(artists)
 		isSeparator: function(idx)         { return false; },
 		isSorted: function()               { return false; },
 		isEditable: function(idx, column)  { return false; },
+		canDrop: function()                { return false; },
   
-       
         getCellValue : function (row,column) {return null;},
         getImageSrc: function(row,col){ return null; },
         

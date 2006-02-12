@@ -15,7 +15,7 @@
 <script src="chrome://global/content/nsTransferable.js"/>
 
 
-<script type="application/x-javascript" src="chrome://xul-amarok/content/xml-rpc.js"/>
+<script type="application/x-javascript" src="chrome://xul-amarok/content/ajax.js"/>
 <script type="application/x-javascript" src="chrome://xul-amarok/content/player.js"/>
 <script type="application/x-javascript" src="chrome://xul-amarok/content/playlist.js"/>
 <script type="application/x-javascript" src="chrome://xul-amarok/content/collectionBrowser.js"/>
@@ -106,9 +106,26 @@
 
 
 <statusbar id="status" persist="collapsed">
-    <statusbarpanel id="statusMessage" label="Stopped" flex="2" />
-    <progressmeter id="progressBar" tooltiptext="Seek" flex="1" onclick="seekTo(event)"/>
-    <progressmeter id="volumeBar" tooltiptext="Volume" onclick="setVolume(event)"/>
+    
+    <label id="statusMessage" value="Stopped" flex="2" />
+
+    <label value="seek" />
+    <vbox class="customSlider">
+		<spacer flex="2"/>
+		<slider	id="progressBar" style="width: 200px" maxpos="100" onmouseup="seek(this.getAttribute('curpos'))" >
+		  <thumb /> 
+	    </slider> 
+	    <spacer flex="2"/>
+	</vbox>
+    
+    <label value="volume" />
+    <vbox class="customSlider">
+		<spacer flex="2"/>
+		<slider	id="volumeBar" style="width: 100px" maxpos="100" onmouseup="setVolume(this.getAttribute('curpos'))" >
+		  <thumb /> 
+	    </slider> 
+	    <spacer flex="2"/>
+	</vbox>
 </statusbar>
 
 </window>

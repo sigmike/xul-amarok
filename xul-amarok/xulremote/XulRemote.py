@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
-import sys,os
-import AmarokXMLRPCServer
+# -*- coding: utf-8 -*-
 
+import sys,os
+
+from AmarokHTTPServer import AmarokHTTPRequestHandler
+from BaseHTTPServer import HTTPServer
 from Amarok import Amarok
 
 
@@ -12,11 +15,14 @@ PORT = 8888
 
 def main():
 
-    amarok = Amarok()
-    srv = AmarokXMLRPCServer.AmarokXMLRPCServer(('',PORT))
-    srv.register_instance(amarok)
-    srv.serve_forever()
-
+    httpd = HTTPServer(('',PORT), AmarokHTTPRequestHandler)
+    httpd.clients=[]
+    httpd.amarok=Amarok()
+    try:
+        httpd.serve_forever()
+    finally:
+        httpd.server_close()
+        print "server closed"
 
 if __name__ == "__main__":
     main()
