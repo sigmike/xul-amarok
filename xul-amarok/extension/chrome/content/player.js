@@ -57,6 +57,8 @@ function playerHandler(xml)
 
 function viewCover()
 {
+	var host = prefs.getCharPref("amarok.host"); 
+	var port = prefs.getCharPref("amarok.port");
 	window.open("http://"+host+":"+port+"/image.png",'coverwindow','chrome=no,width=300,height=300,resizable,centerscreen');
 }
 

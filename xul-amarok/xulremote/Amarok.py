@@ -136,47 +136,14 @@ class Amarok:
 
 
 
-    def addAlbums(self,albums):
-        for album in albums.split('||'):
-
-            urls=[]
-            query = """select distinct t.url from album al, artist ar, tags t 
-                        where t.artist = ar.id and t.album = al.id 
-                            and  al.name = '%s'
-                        order by t.track""" % escape(album)
-            #print query
-            urls=pydcop.anyAppCalled("amarok").collection.query(query)
-            for url in urls: self.addTrack(url)
-            #pydcop.anyAppCalled("amarok").playlist.addMediaList(urls)
-            
-        time.sleep(0.8)
-        return self.getPlaylist()
-
-
-
-    def addArtists(self,artists):
-        
-        for artist in artists.split('||'):
-
-            urls=[]
-            query = """select distinct t.url from album al, artist ar, tags t 
-                        where t.artist = ar.id and t.album = al.id 
-                            and ar.name = '%s'
-                        order by al.name , t.track""" % escape(artist)
-            #print query
-            urls=pydcop.anyAppCalled("amarok").collection.query(query)
-            for url in urls: self.addTrack(url)
-
-        time.sleep(0.8)
-        return self.getPlaylist()
-
-
     
     #============== COLLECTION ==================
     
+
+
     def query(self,query):
         
-        #print type(query), query
+        if self.debug >= 2: print type(query), query
 
         #DOES NOT WORK WITH UNICODE
         #results = pydcop.anyAppCalled("amarok").collection.query(query)
@@ -186,16 +153,51 @@ class Amarok:
         for r in pp: 
             r=r.strip('\n')
             if r: results.append(r)
+
+        if self.debug : print results
         return results
-        
+    
+    
+    
+    def addAlbums(self,albums):
+        for album in albums.split('||'):
+            urls=[]
+            query = """select distinct t.url from album al, artist ar, tags t 
+                        where t.artist = ar.id and t.album = al.id 
+                            and  al.name = '%s'
+                        order by t.track""" % escape(album)
+            
+            urls=self.query(query)
+            if self.debug : print urls
+            
+            for url in urls: self.addTrack(url)
+            
+        time.sleep(0.8)
+        return self.getPlaylist()
+
+
+    def addArtists(self,artists):
+        for artist in artists.split('||'):
+
+            urls=[]
+            query = """select distinct t.url from album al, artist ar, tags t 
+                        where t.artist = ar.id and t.album = al.id 
+                            and ar.name = '%s'
+                        order by al.name , t.track""" % escape(artist)
+            urls=self.query(query)
+            for url in urls: self.addTrack(url)
+
+        time.sleep(0.8)
+        return self.getPlaylist()
+
         
         
     def artists(self,search=''):
+        
         query = """SELECT DISTINCT artist.name 
                        FROM tags INNER JOIN artist ON artist.id=tags.artist  
                        WHERE tags.sampler = 0 """
-        if search != '': 
-            query += """and artist.name like '%%%s%%'""" % escape(search)
+        if search != '': query += """and artist.name like '%%%s%%'""" % escape(search)
         query += " ORDER BY LOWER( artist.name )"
         
         artists =self.query(query)

@@ -16,23 +16,24 @@ function clearPlaylist()
 function addTracks(urls)
 {
     if (urls.length == 0) return false;
-	amarokCall('addTracks','playlistHandler','urls='+urls.join('||'));
+	amarokCall('addTracks','playlistHandler','urls='+encodeURIComponent(urls.join('||')));
 }
 
 
 function addAlbums(albums)
 {
     if (albums.length == 0) return false;
-	amarokCall('addAlbums','playlistHandler','albums='+albums.join('||'));
+	amarokCall('addAlbums','playlistHandler','albums='+encodeURIComponent(albums.join('||')));
 }
 
 
 
 function addArtists(artists)
 {
-    if (artists == 0) return false;
-	amarokCall('addArtists','playlistHandler','artists='+artists.join('||'));
+    if (artists.length == 0) return false;
+	amarokCall('addArtists','playlistHandler','artists='+encodeURIComponent(artists.join('||')));
 }
+
 
 
 
@@ -46,29 +47,34 @@ function playlistHandler(xml)
 
 var playlistView=null;
 
+
 function refreshPlaylist(pl)
 {
-    var tracks = pl.getElementsByTagName('item');
+	//parse the xml playlist into a 2D array [rowNb][colName]
+	var tracks=new Array();
+	var activeIdx=null;
+	
+	var plitems=pl.getElementsByTagName('item');
+	for(var i=0; i < plitems.length; i++) {
+		tracks[i]=new Array();
+		
+		var track=plitems.item(i);
+		if (track.getAttribute('queue_index') == '0') activeIdx=i;
+		
+		var trackValNodes=track.childNodes;
+		for(var j=0; j < trackValNodes.length; j++) {
+			var valNode=trackValNodes.item(j);
+			if (valNode.firstChild) tracks[i][valNode.nodeName]=valNode.firstChild.data;
+			else tracks[i][valNode.nodeName]='';
+		}
+	}
 
+	
     playlistView = {
         rowCount : tracks.length,
-        getCellText : function(row,column){
-        
-            if (!tracks.item(row)) return null;
-            var fieldElmt = tracks.item(row).getElementsByTagName(column.id).item(0);
-            
-            if (fieldElmt && fieldElmt.firstChild) {
-            
-            	if (column.id == 'Length') {
-            		var secs=fieldElmt.firstChild.nodeValue;
-            		var mins = parseInt(secs/60);
-            		secs= secs - 60 * mins;
-            		if (secs < 10) secs='0'+secs;
-            		return mins+':'+secs;
-            	}
-            	else return fieldElmt.firstChild.nodeValue;
-            }
-            else return null;
+        getCellText : function(row,column){ 
+        	if (tracks[row]) return tracks[row][column.id]; 
+        	else return null
         },
         setTree: function(treebox){ this.treebox = treebox; },
         isContainer: function(row){ return false; },
@@ -86,12 +92,7 @@ function refreshPlaylist(pl)
     };
     document.getElementById('playlist').view = playlistView;
     
-    //set active track and update status bar
-    for (i=0; i<tracks.length; i++) {
-        var track = tracks[i];
-        if (track.getAttribute('queue_index') == '0') setPlaying(i);
-    }
-    
+ 	setPlaying(activeIdx);
     return true;
 }
 
@@ -99,9 +100,9 @@ function refreshPlaylist(pl)
 
 function setPlaying(idx)
 {
-	if (!playlistView || !idx) {
-		document.getElementById('statusMessage').setAttribute('value','');
-		return false;
+	if (!playlistView || !idx || idx < 0) {
+		document.getElementById('statusMessage').setAttribute('value','Stopped');
+		return;
 	}
 	
 	playlistView.selection.select(idx);
@@ -114,7 +115,8 @@ function setPlaying(idx)
 	artist=playlistView.getCellText(idx,artistCol);
 	
 	albumCol=document.getElementById('Album');
-	album=playlistView.getCellText(idx,albumCol)
+	album=playlistView.getCellText(idx,albumCol);
+
 	
 	if (!title) {
 		document.getElementById('statusMessage').setAttribute('value','');
@@ -122,6 +124,7 @@ function setPlaying(idx)
 	}
 	
 	var message = 'Playing '+ title+' by '+ artist+' on ' + album;
+	if (message.length > 60) message=message.slice(0,60)+'...';
 	document.getElementById('statusMessage').setAttribute('value',message);
 }
 

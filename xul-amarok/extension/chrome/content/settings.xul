@@ -3,7 +3,7 @@
 
 <prefwindow id="xul-amarok-configure"
             xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-            title="AmaroK host setup"
+            title="AmaroK connexion setup"
             buttons="accept, cancel"
             type="prefwindow" >
 
@@ -11,11 +11,19 @@
     <preferences>
       <preference id="host" name="amarok.host" type="string" instantApply="true"/>
       <preference id="port" name="amarok.port" type="string" instantApply="true"/>
+      <preference id="login" name="amarok.login"  type="string" instantApply="true"/>
+      <preference id="passwd" name="amarok.passwd" type="string" instantApply="true"/>
     </preferences>
     
-	<label value="Host:" control="thost"/><textbox id="thost" preference="host"/>
-	<label value="Port:" control="tport"/><textbox id="tport" preference="port"/>
-	
+    <hbox>
+		<label value="Host:" control="thost"/><textbox flex="2" id="thost" preference="host"/>
+		<label value="Port:" control="tport"/><textbox flex="1" size="6" id="tport" preference="port"/>
+	</hbox>
+	<spacer />
+    <vbox align="center">
+		<label value="Login:"    control="tlogin"/><textbox flex="1" id="tlogin"  preference="login"/>
+		<label value="Password:" control="tpasswd"/><textbox flex="1" type="password" id="tpasswd" preference="passwd"/>
+	</vbox>
 </prefpane>
 
 </prefwindow>

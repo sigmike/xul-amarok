@@ -1,30 +1,33 @@
 
 
 var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
-var host;
-var port;
 
 
 
 function checkPrefs()
 {
-	if (prefs.getCharPref("amarok.host") == '' )  {
-		configure();
-		if (prefs.getCharPref("amarok.host") != '' ) return true;
-		else return false;
-	}
-	else return true;
+	if (prefs.getCharPref("amarok.host")) return true;
+	
+	configure();
+	
+	if (prefs.getCharPref("amarok.host")) return true;
+	return false;
 }
+
+
+
 
 
 function amarokCall(method, handler, data)
 {
-	host = prefs.getCharPref("amarok.host"); 
-	port = prefs.getCharPref("amarok.port");
-
+	var host = prefs.getCharPref("amarok.host"); 
+	var port = prefs.getCharPref("amarok.port");
+	var login = prefs.getCharPref("amarok.login");
+	var passwd = prefs.getCharPref("amarok.passwd");
+	
 	var req = new XMLHttpRequest();
-	req.open('POST', 'http://'+host+':'+port, true);
 
+	req.open('POST', 'http://'+host+':'+port, true);
 	req.handler = handler;
 	
 	req.onload = function(event) {
@@ -40,6 +43,7 @@ function amarokCall(method, handler, data)
 		if (response) eval( self.handler + '\(response\)');
 	}
 
+	req.setRequestHeader('Authorization', 'Basic '+btoa(login+':'+passwd));
 	req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     req.send('method='+method+'&'+data);
 }

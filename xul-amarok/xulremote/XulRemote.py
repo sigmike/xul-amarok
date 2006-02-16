@@ -7,17 +7,24 @@ import sys,os
 from AmarokHTTPServer import AmarokHTTPRequestHandler
 from BaseHTTPServer import HTTPServer
 from Amarok import Amarok
-
-
-# the port number to listen to
-PORT = 8888
+from ConfigParser import SafeConfigParser
 
 
 def main():
+    
+    config=SafeConfigParser()
+    config.read('xulremote.ini')
+    
+    httpd = HTTPServer((config.get('Listen','host'),config.getint('Listen','port')), AmarokHTTPRequestHandler)
+    httpd.clients = []
+    
+    httpd.login   = config.get('HttpAuth','login')
+    httpd.passwd  = config.get('HttpAuth','passwd')
+    httpd.debug   = config.getint('Debug','debugAJAX')
 
-    httpd = HTTPServer(('',PORT), AmarokHTTPRequestHandler)
-    httpd.clients=[]
-    httpd.amarok=Amarok()
+    httpd.amarok = Amarok()
+    httpd.amarok.debug = config.getint('Debug','debugDCOP')
+    
     try:
         httpd.serve_forever()
     finally:

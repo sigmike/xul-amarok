@@ -58,11 +58,11 @@ var playlistObserver = {
 					tracks.push(url);
 				}
 		    	if (level == 1)  {
-					var album = escape(collectionView.visibleData[v][0]);
+					var album = collectionView.visibleData[v][0];
 					albums.push(album);
 				}	
 				if (level == 0)  {
-					var artist = escape(collectionView.visibleData[v][0]);
+					var artist = collectionView.visibleData[v][0];
 					artists.push(artist);
 				}
 			}
