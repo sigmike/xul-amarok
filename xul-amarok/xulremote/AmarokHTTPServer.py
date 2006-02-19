@@ -3,20 +3,62 @@
 import sys, os, shutil
 
 from BaseHTTPServer import BaseHTTPRequestHandler
-import cgi, socket
+import cgi, socket, httplib
 from xml.dom.minidom import parseString
 import base64
 
-
+from BaseHTTPServer import HTTPServer
+from Amarok import Amarok
 import inspect
+
+
+debug_prefix = "[Xul remote HTTPD]"
+
+
+def debug( message ):
+    """ Prints debug message to stdout """
+    print debug_prefix + " " + message
+
+
+
+
+class AmarokHTTPServer(HTTPServer):
+
+
+    def __init__(self, server_address):
+        
+        self.clients = []
+        self.amarok = Amarok()
+        HTTPServer.__init__(self, server_address, AmarokHTTPRequestHandler)
+
+
+    def serve_forever(self):
+        self.stop=False;
+        while not self.stop:
+            self.handle_request()
+
+
+    def server_close(self):
+
+        self.stop=True;
+
+        #send a fake request to enter loop
+        (host,port)=self.server_address
+        conn = httplib.HTTPConnection("localhost:"+str(port))
+        conn.request("QUIT", "")
+
+
 
 class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
 
 
+    def log_message(self, format, *args):
+        debug("%s - - [%s] %s" % (self.address_string(), self.log_date_time_string(), format%args)  )
+
 
     def checkAuth(self):
 
-        if not self.server.passwd: return true
+        if not self.server.passwd: return True
         
         if self.headers.has_key('Authorization'):
             (login,passwd)=base64.decodestring(self.headers.getheader('Authorization')[6:]).split(':')
@@ -24,7 +66,8 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
             if login == self.server.login and passwd == self.server.passwd: return True
             else: 
                 self.send_error(403, 'Authentication failed')
-                print "AUTHENTICATION FAILURE FROM %s" % self.client_address
+                (host,port)=self.client_address
+                debug("AUTHENTICATION FAILURE FROM %s" % host)
                 return False
 
         else:
@@ -37,9 +80,10 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
 
 
 
+    
 
     def do_POST(self):
-        print "========= POST REQUEST ========="
+        debug( "========= POST REQUEST =========")
         if not self.checkAuth(): return False
 
         """notify amarok user for a new connexion"""
@@ -80,16 +124,16 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
         except UnicodeDecodeError, err:
             errmsg="UnicodeDecodeError: %s" % err
             self.send_error(500, errmsg)
-            print errmsg
+            debug(errmsg)
             raise
         except RuntimeError, err:
             errmsg="RuntimeError: %s" % err
             self.send_error(500, errmsg)
-            print errmsg
+            debug(errmsg)
             raise
         except:
             errmsg = "Unexpected error: %s " % sys.exc_info()[0]
-            print errmsg
+            debug(errmsg)
             self.send_error(500, errmsg)
             raise
 
@@ -111,7 +155,7 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         """Serves the extension and covers images"""
         
-        print "========= GET REQUEST ========="
+        debug("========= GET REQUEST =========")
         if self.server.debug : print selt.path
             
         if self.path== '/image.png':
@@ -146,7 +190,7 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
             (hostname, aliaslist, ipaddrlist) = socket.gethostbyaddr(host)
             message = 'XUL remote: Firefox extension install from %s' % hostname
             self.server.amarok.showMessage(message)
-            print message
+            debug(message) 
             
             self.send_response(200)
             self.send_header("Content-type", "application/x-xpinstall")
@@ -154,6 +198,10 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             shutil.copyfileobj(f, self.wfile)
             f.close()
-            
-            
+
+
+ 
+    def do_QUIT(self):
+        pass
+        
         

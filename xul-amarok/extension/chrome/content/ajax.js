@@ -35,7 +35,7 @@ function amarokCall(method, handler, data)
 		var self = event.target;
 		
 		if (self.readyState == 4 && self.status != 200) {
-			alert(self.status+" : "+self.statusText);
+			showError(self.status+" : "+self.statusText)
 			return false;
 		}
 		

@@ -125,8 +125,16 @@ function setPlaying(idx)
 	
 	var message = 'Playing '+ title+' by '+ artist+' on ' + album;
 	if (message.length > 60) message=message.slice(0,60)+'...';
+	
 	document.getElementById('statusMessage').setAttribute('value',message);
+	document.getElementById('statusMessage').setAttribute('class','');
 }
 
+
+function showError(message)
+{
+	document.getElementById('statusMessage').setAttribute('value',message);
+	document.getElementById('statusMessage').setAttribute('class','error');
+}
 
 

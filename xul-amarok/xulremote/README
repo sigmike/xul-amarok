@@ -1,95 +1,104 @@
-==================================================================
-                      AmaroK XUL Remote 0.6
-==================================================================
 
-Control AmaroK from any Firefox browser on your network.
+<div align="center">
+	<h2>AmaroK XUL Remote 0.7</h2>
+	<p>Control AmaroK from any Firefox browser on your network.</p>
+	<p>the script itself is a HTTP server which plugs amarok DCOP interface 
+			to the included firefox extension.</p>
+</div>
 
-the script itself is a HTTP server which plugs amarok DCOP interface 
-to the included firefox extension.
+<div><h4>INSTALL</h4>
+<ul>
+	<li>Download the archive, then install and run it with AmaroK script manager</li>
+	<li>On the first launch, you will be prompted for some parameters:<br />
+		<b>interface</b> (optional): the IP adress of your network interface the server will listen on (empty means all)<br />
+		<b>port</b> (required): you can leave 8888 as a default<br />
+		<b>login/passwd</b> (optional): if you wish to restrict access
+	</li> 
+	
+	<li>on any host on your network, launch firefox, go to http://&lt;hostname&gt;:&lt;port&gt; , and install the extension</li>
+	<li>restart firefox</li>
+	<li>launch "AmaroK remote" in the firefox "Tools" menu.</li>
+	<li>set the options of the extension to match those on the server</li>
+</ul>
+</div>
 
+<div><h4>REQUIREMENTS</h4>
+<ul>
+	<li>python &gt;= 2.3</li>
+	<li><b>pyqt</b> (python QT bindings)</li>
+	<li>AmaroK &gt;= 1.4 beta1</li>
+	<li>Firefox &gt;= 1.5</li>
+</ul>
+</div>
 
-INSTALL:
-- Download the archive, then install and run it with AmaroK script manager
-- with firefox, go to http://hostname:8888 , and install the extension
-- restart firefox
-- launch "AmaroK remote" in the firefox "Tools" menu.
-- the extension has 2 options: host and port, that's the same host (hostname) and port (8888)
-	you used to install the extension.
-
-
-NOTES
------
-THIS RELEASE REQUIRES FIREFOX >= 1.5
-Tested with AmaroK 1.4-SVN
-
-FEATURES
---------
-- basic player manipulation: play, pause, stop, next, previous, seek, volume
-- playlist view, plays a track when clicking on it
-- collection browser with filtering, support for compilations
-- drag and drop tracks, album and artists from the collection to the playlist
-
-
-REQUIREMENTS
-------------
-- python 2.3
-- pydcop (python DCOP bindings), included in kdebindings
-- AmaroK 1.3 (the newest features may only work with 1.4-SVN)
-- Firefox 1.5
-
-
-CHANGELOG
----------
-0.6 - 2006-02-12
-- unicode support
-	due to some issues with unicode and pydcop, 
-	the command line dcop is used for some actions
-
-- reworked communication layer
-	uses AJAX instead of XML-RPC, which was designed for ascii
-
-- sliders for seek and volume
-	adapted from foxytunes (thanks to Alex Sirota)
-
-- amarok message on new connections
-- cover view
-
-0.5 - 2006-02-05
-- support for firefox 1.5.0.1
-
-0.4 - 2005-10-16
-- drag and drop now works with albums and artists
-- support for special characters
-
-0.3 - 2005-09-10
-- support for firefox 1.5 (won't work anymore with 1.0.x)
-- use the new firefox preferences system
-- works with amaroK 1.3
-- better layout
-- collection browser handles compilations
-- dropped the Dynamic mode switch
-
-0.2 - 2005-05-03
-- Add a party mode enable/disable switch
-- corrected bugs in the collection browser
-- some cleanups
+<div><h4>FEATURES</h4>
+<ul>
+	<li>basic player manipulation: play, pause, stop, next, previous, seek, volume</li>
+	<li>playlist view, skip to a track on double click</li>
+	<li>collection browser with filtering, support for compilations</li>
+	<li>drag and drop tracks, album and artists from the collection</li>
+	<li>cover view for current track</li>
+	<li>access restricted by login/password </li>
+</ul>
+</div>
 
 
-TODO
-----
+<div><h4>CHANGELOG</h4>
+<ul>
+	<li><b>0.7 - 2006-02-19</b><br />
+	- big changes on the script side, now is a pyqt application
+	- login/password authentication (HTTP Basic)<br />
+	- configuration interface<br />
+	- dropped requirement for pydcop, uses dcop CLI instead<br />
+	- corrected drag and drop of unicode artists/albums/tracks<br />
+	</li>
+
+	<li><b>0.6 - 2006-02-12</b><br />
+	- unicode support:<br />
+		due to some issues with unicode and pydcop, the command line dcop is used for some actions<br />
+	- reworked communication layer<br />
+	- sliders for seek and volume, adapted from foxytunes (thanks to Alex Sirota)<br />
+	- amarok message on new connections<br />
+	- cover view
+
+	<li><b>0.5 - 2006-02-05</b><br />
+	- support for firefox 1.5.0.1
+	</li>
+	
+	<li><b>0.4 - 2005-10-16</b><br />
+	- drag and drop now works with albums and artists<br />
+	- support for special characters
+	</li>
+	
+	<li><b>0.3 - 2005-09-10</b><br />
+	- support for firefox 1.5 (won't work anymore with 1.0.x)<br />
+	- use the new firefox preferences system<br />
+	- works with amaroK 1.3<br />
+	- better layout<br />
+	- collection browser handles compilations<br />
+	- dropped the Dynamic mode switch
+	</li>
+	<li><b>0.2 - 2005-05-03</b><br />
+	- Add a party mode enable/disable switch<br />
+	- corrected bugs in the collection browser<br />
+	- some cleanups
+	</li>
+</ul>
+</div>
+
+
+
+<div><h4>TODO</h4>
 Goals for 1.0:
-- Have an access list for allowed hosts, editable from amarok script manager
-- remove tracks from playlist: a DCOP call is available in 1.4-SVN
+<ul>
+	<li>Have an access list for allowed hosts, editable from amarok script manager</li>
+	<li>remove tracks from playlist: a DCOP call is available in 1.4-SVN</li>
+</ul>
 
 (much) later:
-- use remote XUL instead of an extension (custom treeviews don't work remotely yet)
+<ul><li>use remote XUL instead of an extension (custom treeviews don't work remotely yet)</li></ul>
+</div>
 
+<p><b>LICENSE</b>: GPL V2</p>
+<p><b>AUTHOR</b>: Matthieu Bedouet ( mbedouet at gmail dot com )</p>
 
-LICENSE
--------
-GPL V2
-
-
-AUTHOR
-------
-Matthieu Bedouet < mbedouet at gmail dot com >

@@ -7,103 +7,109 @@ from urllib import unquote, quote
 from re import escape
 from xml.dom.minidom import parse, parseString
 
-try:
-    import pcop
-    import pydcop
-except:
-    os.popen( "kdialog --sorry 'pydcop (DCOP bindings for Python) is required for this script.'" )
-    raise
 
+
+debug_prefix = "[Xul remote DCOP ]"
+
+def debug( message ):
+    """ Prints debug message to stdout """
+    print debug_prefix + " " + message
+
+   
+    
 class Amarok:
     
-    
+    def dcopCall(self, interface, method, params=''):
+        
+        debug("%s %s %s" % ( interface, method, params))
+        p=os.popen("dcop amarok %s %s %s" % (interface, method, escape(str(params)) ))
+        res=p.read().strip('\n')
+        try:
+            res=int(res)
+            return res
+        except:
+            return res
+        
     def showMessage(self,msg):
-        pydcop.anyAppCalled("amarok").playlist.popupMessage(msg)
+        self.dcopCall('playlist', 'popupMessage', msg)
         
     #============== PLAYER ==================
     
     def getPosition(self):
-        ctime=pydcop.anyAppCalled("amarok").player.trackCurrentTime()
-        ttime=pydcop.anyAppCalled("amarok").player.trackTotalTime()
+        ctime=self.dcopCall('player', 'trackCurrentTime')
+        ttime=self.dcopCall('player', 'trackTotalTime')
         if ttime > 0 and ctime > 0: return int((100 * ctime) / ttime)
         else: return 0
 
 
     def getPlaying(self):
-        idx=pydcop.anyAppCalled("amarok").playlist.getActiveIndex()
+        idx=self.dcopCall('playlist', 'getActiveIndex')
         pos=self.getPosition()
         return parseString("""<index position="%d">%d</index>""" % (pos,idx))
 
     
     #main controls
     def play(self):
-        pydcop.anyAppCalled("amarok").player.play()
+        self.dcopCall('player', 'play')
         return self.getPlaying()
 
     def playByIndex(self,idx):
-        pydcop.anyAppCalled("amarok").playlist.playByIndex(int(idx))
-        idx=pydcop.anyAppCalled("amarok").playlist.getActiveIndex()
-        return parseString("""<index position="0">%d</index>""" % idx)
+        self.dcopCall('playlist', 'playByIndex', idx)
+        return self.getPlaying()
     
     def stop(self):
-        pydcop.anyAppCalled("amarok").player.stop()
-        idx=pydcop.anyAppCalled("amarok").playlist.getActiveIndex()
-        return parseString("""<index position="0">%d</index>""" % idx)
+        self.dcopCall('player', 'stop')
+        return self.getPlaying()
 
     def pause(self):
-        pydcop.anyAppCalled("amarok").player.playPause()
+        self.dcopCall('player', 'playPause')
         return self.getPlaying()
 
     def next(self):
-        pydcop.anyAppCalled("amarok").player.next()
-        idx=pydcop.anyAppCalled("amarok").playlist.getActiveIndex()
-        return parseString("""<index position="0">%d</index>""" % idx)
+        self.dcopCall('player', 'next')
+        return self.getPlaying()
 
     def prev(self):
-        pydcop.anyAppCalled("amarok").player.prev()
-        idx=pydcop.anyAppCalled("amarok").playlist.getActiveIndex()
-        return parseString("""<index position="0">%d</index>""" % idx)
-        
+        self.dcopCall('player', 'prev')
+        return self.getPlaying()
+
+
     def seek(self,pos):
         pos=int(pos)
         
-        idx=pydcop.anyAppCalled("amarok").playlist.getActiveIndex()
-        if pydcop.anyAppCalled("amarok").player.isPlaying() == 0:
+        idx=self.dcopCall('playlist', 'getActiveIndex')
+        if self.dcopCall('player', 'isPlaying') == 0:
             return parseString("""<index position="0">%d</index>""" % idx)
-        
-        ttime=pydcop.anyAppCalled("amarok").player.trackTotalTime()
+
+        ttime=self.dcopCall('player', 'trackTotalTime')
         if ttime > 0: ctime = int(pos * ttime / 100)
         else: ctime=0
         
         #SEEK
-        pydcop.anyAppCalled("amarok").player.seek(ctime)
-
+        self.dcopCall('player', 'seek', ctime)
         return parseString("""<index position="%d">%d</index>""" % (pos,idx))
 
     
     def coverImage(self):
-        return pydcop.anyAppCalled("amarok").player.coverImage()
+        return self.dcopCall('player', 'coverImage')
 
     #volume
     def volumeUp(self):
-        pydcop.anyAppCalled("amarok").player.volumeUp()
-        vol=pydcop.anyAppCalled("amarok").player.getVolume()
-        return parseString("<volume>%d</volume>" % vol)
+        self.dcopCall('player', 'volumeUp')
+        return self.getVolume()
     
     def volumeDown(self):
-        pydcop.anyAppCalled("amarok").player.volumeDown()
-        vol=pydcop.anyAppCalled("amarok").player.getVolume()
-        return parseString("<volume>%d</volume>" % vol)
+        self.dcopCall('player', 'volumeDown')
+        return self.getVolume()
         
     def setVolume(self,vol):
         vol=int(float(vol))
         
-        pydcop.anyAppCalled("amarok").player.setVolume(vol)
-        vol=pydcop.anyAppCalled("amarok").player.getVolume()
-        return parseString("<volume>%d</volume>" % vol)
+        self.dcopCall('player', 'setVolume', vol)
+        return self.getVolume()
     
     def getVolume(self):
-        vol=pydcop.anyAppCalled("amarok").player.getVolume()
+        vol=self.dcopCall('player', 'getVolume')
         return parseString("<volume>%d</volume>" % vol)
     
     
@@ -111,20 +117,17 @@ class Amarok:
     #============== PLAYLIST ==================
     
     def getPlaylist(self):
-        plFile = pydcop.anyAppCalled("amarok").playlist.saveCurrentPlaylist()
+        plFile = self.dcopCall('playlist', 'saveCurrentPlaylist')
         return parse(plFile)
     
     def clearPlaylist(self):
-        pydcop.anyAppCalled("amarok").playlist.clearPlaylist()
+        self.dcopCall('playlist', 'clearPlaylist')
         return self.getPlaylist()
 
 
-    
-
 
     def addTrack(self,url):
-        pydcop.anyAppCalled("amarok").playlist.addMedia(url)
-
+        self.dcopCall('playlist', 'addMedia', url)
 
 
     def addTracks(self,urls):
@@ -135,7 +138,6 @@ class Amarok:
         return self.getPlaylist()
 
 
-
     
     #============== COLLECTION ==================
     
@@ -143,7 +145,7 @@ class Amarok:
 
     def query(self,query):
         
-        if self.debug >= 2: print type(query), query
+        if self.debug >= 2: debug( type(query) +  query)
 
         #DOES NOT WORK WITH UNICODE
         #results = pydcop.anyAppCalled("amarok").collection.query(query)
@@ -208,9 +210,13 @@ class Amarok:
         domArtists=parseString("<artists />")
         for artist in artists:
             domArtist=domArtists.createElement('artist')
-            content=domArtists.createTextNode(unicode(artist,'utf-8'))
-            domArtist.appendChild(content)
-            domArtists.documentElement.appendChild(domArtist)
+            try:
+                content=domArtists.createTextNode(unicode(artist,'utf-8'))
+            except UnicodeDecodeError, err:
+                print "PROBLEM WITH ARTIST TAG %s : ERROR %s" % (artist, err)
+            else:
+                domArtist.appendChild(content)
+                domArtists.documentElement.appendChild(domArtist)
         return domArtists
 
    
