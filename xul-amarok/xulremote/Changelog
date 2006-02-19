@@ -1,3 +1,11 @@
+
+0.7 - 2006-02-19
+	- big changes on the script side, now is a pyqt application
+	- login/password authentication (HTTP Basic)
+	- configuration interface
+	- dropped requirement for pydcop, uses dcop CLI instead
+	- corrected drag and drop of unicode artists/albums/tracks
+
 0.6 - 2006-02-12
 - unicode support
 	due to some issues with unicode and pydcop, 
