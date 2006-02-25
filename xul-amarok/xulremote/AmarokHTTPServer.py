@@ -40,7 +40,7 @@ class AmarokHTTPServer(HTTPServer):
         conn.request("QUIT", "")
 
     def debug(self, message):
-        if self.debugAJAX > 0: print "%s %s" % (debug_prefix, message)
+        if self.debugAJAX: print "%s %s" % (debug_prefix, message)
 
 
 
@@ -60,7 +60,7 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
             
             if login == self.server.login and passwd == self.server.passwd: return True
             else: 
-                self.send_error(403, 'Authentication failed')
+                self.send_error(403, 'Permission denied')
                 (host,port)=self.client_address
                 self.server.debug("AUTHENTICATION FAILURE FROM %s" % host)
                 return False
@@ -172,7 +172,7 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
             """Serve  the extension"""
             try:
                 file=sys.path[0]+os.sep+"xul-amarok.xpi"
-                self.server.debug( "serving extension" % file)
+                self.server.debug( "serving extension %s" % file)
                 f = open(file, "r")
             except IOError:
                 self.send_error(404, "File not found")

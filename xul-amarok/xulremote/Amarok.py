@@ -13,7 +13,7 @@ debug_prefix = "[XUL remote DCOP ]"
 class Amarok:
     
     def debug(self, msg):
-        if self.debugDCOP > 0: print "%s %s" % (debug_prefix, msg)
+        if self.debugDCOP: print "%s %s" % (debug_prefix, msg)
         
     def dcopCall(self, interface, method, params=''):
 

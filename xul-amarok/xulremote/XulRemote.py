@@ -82,8 +82,8 @@ class ConfigDialog( XULremoteConfigDialog ):
             config.set( "HttpAuth", "login", self.login.text().ascii() )
             config.set( "HttpAuth", "passwd", self.password.text().ascii() )
             config.add_section( "Debug" )
-            config.set( "Debug", "debugAJAX", 0 )
-            config.set( "Debug", "debugDCOP", 0 )
+            config.set( "Debug", "debugAJAX", 'off' )
+            config.set( "Debug", "debugDCOP", 'off' )
             config.write( cfile )
             cfile.close()
             
@@ -112,8 +112,8 @@ class AmarokHttpdThread(threading.Thread):
             self.port=config.getint('Listen','port')
             self.login=config.get('HttpAuth','login')
             self.passwd=config.get('HttpAuth','passwd')
-            self.debugAJAX=config.getint('Debug','debugAJAX')
-            self.debugDCOP=config.getint('Debug','debugDCOP')
+            self.debugAJAX=config.getboolean('Debug','debugAJAX')
+            self.debugDCOP=config.getboolean('Debug','debugDCOP')
 
         except:
             debug("error reading config: won't start HTTPD")

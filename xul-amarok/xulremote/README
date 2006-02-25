@@ -2,8 +2,7 @@
 <div align="center">
 	<h2>AmaroK XUL Remote 0.7</h2>
 	<p>Control AmaroK from any Firefox browser on your network.</p>
-	<p>the script itself is a HTTP server which plugs amarok DCOP interface 
-			to the included firefox extension.</p>
+	<p>This AmaroK script embeds a Firefox extension and a HTTP server</p>
 </div>
 
 <div><h4>INSTALL</h4>
@@ -33,12 +32,12 @@
 
 <div><h4>FEATURES</h4>
 <ul>
-	<li>basic player manipulation: play, pause, stop, next, previous, seek, volume</li>
-	<li>playlist view, skip to a track on double click</li>
-	<li>collection browser with filtering, support for compilations</li>
-	<li>drag and drop tracks, album and artists from the collection</li>
+	<li>player manipulation: play, pause, stop, next, previous, seek, volume</li>
+	<li>auto refreshing playlist view, plays a given track on click</li>
+	<li>collection browser with filtering, ordered by artist/album</li>
+	<li>drag and drop tracks, album and artists to the playlist</li>
 	<li>cover view for current track</li>
-	<li>access restricted by login/password </li>
+	<li>access restricted by login/password</li>
 </ul>
 </div>
 
@@ -46,11 +45,13 @@
 <div><h4>CHANGELOG</h4>
 <ul>
 	<li><b>0.7 - 2006-02-19</b><br />
-	- big changes on the script side, now is a pyqt application
 	- login/password authentication (HTTP Basic)<br />
+	- big changes on the script side, now a pyqt application<br />
 	- configuration interface<br />
-	- dropped requirement for pydcop, uses dcop CLI instead<br />
-	- corrected drag and drop of unicode artists/albums/tracks<br />
+	- always use dcop CLI, pydcop no longer required<br />
+	- unicode bugfixes<br />
+	- no more javascript warnings<br />
+	- debugging possibilities, see xulremote.ini
 	</li>
 
 	<li><b>0.6 - 2006-02-12</b><br />

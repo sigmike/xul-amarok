@@ -1,5 +1,5 @@
-content	xul-amarok          chrome/content/ 		xpcnativewrappers=no
-locale	xul-amarok en-US   	chrome/locale/en-US/
-skin	xul-amarok classic  chrome/skin/classic/
+content	xul-amarok          jar:chrome/xul-amarok.jar!/content/ 		xpcnativewrappers=no
+locale	xul-amarok en-US   	jar:chrome/xul-amarok.jar!/locale/en-US/
+skin	xul-amarok classic  jar:chrome/xul-amarok.jar!/skin/classic/
 
 overlay chrome://browser/content/browser.xul    chrome://xul-amarok/content/xul-amarok-overlay.xul
