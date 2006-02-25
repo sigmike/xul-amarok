@@ -125,7 +125,7 @@ function initCollectionBrowser(artists)
 			var item = this.visibleData[idx];
 			
 			//not a container
-			if (!item[2]) return;
+			if (!item[2]) return true;
 			
 			//already opened >> closing
 			if (item[3]) {

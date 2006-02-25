@@ -41,6 +41,7 @@ function onLoad()
     	setTimer();
  	}
     loaded = true;
+    return true;
 }
 
 

@@ -23,8 +23,8 @@ var collectionObserver = {
 
 		if (items.length == 0) return false;
 		transferData.data.addDataForFlavour('amarok/browseritems',items);
-		
-  }
+		return true;
+	}
 };
 
 

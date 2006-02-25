@@ -3,44 +3,44 @@
 
 function play()
 {
-	amarokCall('play','playerHandler','');
+	return amarokCall('play','playerHandler','');
 }
 
 function playTrack(idx)
 {
-    amarokCall('playByIndex','playerHandler','idx='+idx);
+    return amarokCall('playByIndex','playerHandler','idx='+idx);
 }
 
 function next()
 { 
-    amarokCall('next','playerHandler','');
+    return amarokCall('next','playerHandler','');
 }
 
 function prev()
 { 
-    amarokCall('prev','playerHandler','');
+    return amarokCall('prev','playerHandler','');
 }
 
 
 function pause()
 { 
-    amarokCall('pause','playerHandler','');
+    return amarokCall('pause','playerHandler','');
 }
 
 function stop()
 {
-    amarokCall('stop','playerHandler','');
+    return amarokCall('stop','playerHandler','');
 }
 
 
 function seek(pos)
 {
-	amarokCall('seek','playerHandler','pos='+pos);
+	return amarokCall('seek','playerHandler','pos='+pos);
 }
 
 function getPlaying()
 {
-	amarokCall('getPlaying','playerHandler','');
+	return amarokCall('getPlaying','playerHandler','');
 }
 
 
@@ -51,7 +51,7 @@ function playerHandler(xml)
 	pos = elmt.getAttribute('position');
 	
     var pbar = document.getElementById('progressBar').setAttribute('curpos',pos);
-    setPlaying(idx);
+    return setPlaying(idx);
 }
 
 
@@ -59,24 +59,25 @@ function viewCover()
 {
 	var host = prefs.getCharPref("amarok.host"); 
 	var port = prefs.getCharPref("amarok.port");
-	window.open("http://"+host+":"+port+"/image.png",'coverwindow','chrome=no,width=300,height=300,resizable,centerscreen');
+	return window.open("http://"+host+":"+port+"/image.png",'coverwindow','chrome=no,width=300,height=300,resizable,centerscreen');
 }
 
 
 function setVolume(vol)
 {
-	amarokCall('setVolume','setVolumeHandler','vol='+vol);
+	return amarokCall('setVolume','setVolumeHandler','vol='+vol);
 }
 
 function getVolume()
 {
-	amarokCall('getVolume','setVolumeHandler','');
+	return amarokCall('getVolume','setVolumeHandler','');
 }
 
 function setVolumeHandler(xml)
 {
 	volume = xml.getElementsByTagName('volume').item(0).firstChild.nodeValue;
 	document.getElementById('volumeBar').setAttribute('curpos', volume);
+	return true;
 }
 
 

@@ -7,23 +7,22 @@ from urllib import unquote, quote
 from re import escape
 from xml.dom.minidom import parse, parseString
 
+debug_prefix = "[XUL remote DCOP ]"
 
 
-debug_prefix = "[Xul remote DCOP ]"
-
-def debug( message ):
-    """ Prints debug message to stdout """
-    print debug_prefix + " " + message
-
-   
-    
 class Amarok:
     
-    def dcopCall(self, interface, method, params=''):
+    def debug(self, msg):
+        if self.debugDCOP > 0: print "%s %s" % (debug_prefix, msg)
         
-        debug("%s %s %s" % ( interface, method, params))
-        p=os.popen("dcop amarok %s %s %s" % (interface, method, escape(str(params)) ))
+    def dcopCall(self, interface, method, params=''):
+
+        cmd="dcop amarok %s %s %s" % (interface, method, escape(str(params)) )
+        self.debug("calling %s" % cmd )
+    
+        p=os.popen(cmd)
         res=p.read().strip('\n')
+        self.debug("=> %s returns %s" % (method, res) )
         try:
             res=int(res)
             return res
@@ -145,18 +144,12 @@ class Amarok:
 
     def query(self,query):
         
-        if self.debug >= 2: debug( type(query) +  query)
-
-        #DOES NOT WORK WITH UNICODE
-        #results = pydcop.anyAppCalled("amarok").collection.query(query)
-        
         pp=os.popen("dcop amarok collection query \"%s\"" % query, 'r')
         results=[]
         for r in pp: 
             r=r.strip('\n')
             if r: results.append(r)
-
-        if self.debug : print results
+        self.debug("query results: %s" % results)
         return results
     
     
@@ -170,8 +163,6 @@ class Amarok:
                         order by t.track""" % escape(album)
             
             urls=self.query(query)
-            if self.debug : print urls
-            
             for url in urls: self.addTrack(url)
             
         time.sleep(0.8)
@@ -213,7 +204,8 @@ class Amarok:
             try:
                 content=domArtists.createTextNode(unicode(artist,'utf-8'))
             except UnicodeDecodeError, err:
-                print "PROBLEM WITH ARTIST TAG %s : ERROR %s" % (artist, err)
+                debug("PROBLEM WITH ARTIST TAG %s : ERROR %s" % (artist, err))
+                pass
             else:
                 domArtist.appendChild(content)
                 domArtists.documentElement.appendChild(domArtist)
@@ -224,12 +216,12 @@ class Amarok:
 
         if artist == 'Various artists':
             query= """SELECT DISTINCT album.name 
-                        FROM tags INNER JOIN album ON album.id=tags.album INNER JOIN year ON year.id=tags.year
-                        WHERE tags.sampler = 1  ORDER BY LOWER( album.name )"""
+                      FROM tags INNER JOIN album ON album.id=tags.album INNER JOIN year ON year.id=tags.year 
+                      WHERE tags.sampler = 1  ORDER BY LOWER( album.name )"""
         else:
             query = """select distinct al.name from album al, artist ar, tags t 
-                    where t.artist = ar.id and t.album = al.id and ar.name = '%s'
-                    order by al.name""" % escape(artist)
+                        where t.artist = ar.id and t.album = al.id and ar.name = '%s' 
+                        order by al.name""" % escape(artist)
 
         albums=self.query(query)
         
@@ -271,9 +263,16 @@ class Amarok:
                 domTrack.setAttribute('url',unicode(track,'utf-8'))
             n=n+1
         return domTracks
-        
-        
 
-        
-        
-        
+
+
+
+if __name__ == "__main__":
+    
+    #for tests
+    a=Amarok()
+    pl=a.getPlaylist()
+    print pl.toxml('utf-8')
+
+    
+    

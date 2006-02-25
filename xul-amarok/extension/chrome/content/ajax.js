@@ -40,11 +40,17 @@ function amarokCall(method, handler, data)
 		}
 		
 		response=self.responseXML;
-		if (response) eval( self.handler + '\(response\)');
+		if (response) {
+			eval( self.handler + '\(response\)');
+			return true;
+		}
+		else return false;	
 	}
 
 	req.setRequestHeader('Authorization', 'Basic '+btoa(login+':'+passwd));
 	req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    req.send('method='+method+'&'+data);
+	var query = 'method='+method;
+	if (data) query += "&"+data;
+    req.send(query);
 }
 

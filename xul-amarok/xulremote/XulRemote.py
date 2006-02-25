@@ -31,19 +31,15 @@ except:
     raise
 
 from XULremoteConfigDialog import XULremoteConfigDialog
+from AmarokHTTPServer import AmarokHTTPServer
 
 
-
-from AmarokHTTPServer import AmarokHTTPServer, AmarokHTTPRequestHandler
-
-
-
-debug_prefix = "[Xul remote]"
+debug_prefix = "[XUL remote]"
 configFile='xulremote.ini'
 
 def debug( message ):
     """ Prints debug message to stdout """
-    print debug_prefix + " " + message
+    print "%s %s" % (debug_prefix , message)
 
 
 class ConfigFileError(Exception):
@@ -58,7 +54,7 @@ class ConfigDialog( XULremoteConfigDialog ):
 
     def __init__( self, parent=None ):
         XULremoteConfigDialog.__init__( self, parent )
-        
+
         try:
             config=ConfigParser.SafeConfigParser()
             config.read(configFile)
@@ -125,13 +121,12 @@ class AmarokHttpdThread(threading.Thread):
             raise ConfigFileError, "error reading config file"
 
         self.httpd = AmarokHTTPServer((self.interface,self.port))
-        
         self.httpd.login   = self.login
         self.httpd.passwd  = self.passwd
-        self.httpd.debug   = self.debugAJAX
-    
-        self.httpd.amarok.debug = self.debugDCOP
+        self.httpd.debugAJAX = self.debugAJAX
+        self.httpd.amarok.debugDCOP = self.debugDCOP
 
+    
     def run (self):
         if self.httpd:
             debug("starting HTTPD")
@@ -162,6 +157,7 @@ class readStdin(threading.Thread):
         self.app=app
 
     def run(self):
+        debug("starting readStdin")
         self.running=True
         while self.running:
             # Read data from stdin. Will block until data arrives.
@@ -173,15 +169,13 @@ class readStdin(threading.Thread):
         self.running=False
 
 
-
-
                 
 class XULRemote( QApplication ):
     """ The main application, also sets up the Qt event loop """
 
     def __init__( self, args ):
         QApplication.__init__( self, args )
-        debug( "Started." )
+
 
         # Start separate thread for reading data from stdin
         self.stdinReader=readStdin(self)
@@ -190,7 +184,6 @@ class XULRemote( QApplication ):
         self.httpd=None
         self.startHttpd()
 
-        
 
     def startHttpd(self):
         
@@ -221,15 +214,14 @@ class XULRemote( QApplication ):
         self.cnf.show()
 
     def quit(self):
+        debug("shutdown")
         self.stdinReader.stop()
         self.httpd.stop()
         qApp.quit()
+        debug("bye")
 
 
 ############################################################################
-
-
-
 
 
 class MainThead(threading.Thread):
@@ -245,10 +237,6 @@ class MainThead(threading.Thread):
     def exit(self,signum,sigframe):
         self.app.quit()
         sys.exit(signum)
-
-def exit(signum,frame):
-    print "exiting (%d) ..."%(signum)
-    sys.exit(signum)
 
 
 if __name__ == "__main__":

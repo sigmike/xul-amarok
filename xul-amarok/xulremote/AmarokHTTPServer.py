@@ -12,14 +12,7 @@ from Amarok import Amarok
 import inspect
 
 
-debug_prefix = "[Xul remote HTTPD]"
-
-
-def debug( message ):
-    """ Prints debug message to stdout """
-    print debug_prefix + " " + message
-
-
+debug_prefix = "[XUL remote HTTPD]"
 
 
 class AmarokHTTPServer(HTTPServer):
@@ -39,13 +32,15 @@ class AmarokHTTPServer(HTTPServer):
 
 
     def server_close(self):
-
         self.stop=True;
-
-        #send a fake request to enter loop
+        
+        #send a fake request to loop serve_forever
         (host,port)=self.server_address
         conn = httplib.HTTPConnection("localhost:"+str(port))
         conn.request("QUIT", "")
+
+    def debug(self, message):
+        if self.debugAJAX > 0: print "%s %s" % (debug_prefix, message)
 
 
 
@@ -53,7 +48,7 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
 
 
     def log_message(self, format, *args):
-        debug("%s - - [%s] %s" % (self.address_string(), self.log_date_time_string(), format%args)  )
+        self.server.debug("%s - - [%s] %s" % (self.address_string(), self.log_date_time_string(), format%args)  )
 
 
     def checkAuth(self):
@@ -67,11 +62,11 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
             else: 
                 self.send_error(403, 'Authentication failed')
                 (host,port)=self.client_address
-                debug("AUTHENTICATION FAILURE FROM %s" % host)
+                self.server.debug("AUTHENTICATION FAILURE FROM %s" % host)
                 return False
 
         else:
-            """actually not used as the header key is always set by the client"""
+            """actually not used as the header key is always set by the XUL client"""
             self.send_response(401)
             self.send_header("WWW-Authenticate", "Basic realm=\"amarok\"")
             self.end_headers()
@@ -80,10 +75,9 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
 
 
 
-    
 
     def do_POST(self):
-        debug( "========= POST REQUEST =========")
+        
         if not self.checkAuth(): return False
 
         """notify amarok user for a new connexion"""
@@ -97,7 +91,7 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
         self.query = self.rfile.read(int(self.headers['Content-Length']))
         self.args = dict(cgi.parse_qsl(self.query))
         
-        if self.server.debug >= 2: print self.args
+        self.server.debug( "<== POST REQUEST %s" % self.query)
         
         method=self.args['method']
         del self.args['method']
@@ -105,7 +99,6 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
         if method not in dir(self.server.amarok) or not callable(getattr(self.server.amarok, method)):
             message='ERROR method %s not callable' % method
             self.send_error(500,message)
-            print message
             return false
             
     
@@ -117,24 +110,22 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
                     else : params.append('')
 
             """Amarok DCOP call"""
-            if self.server.debug: print method, params
             response=getattr(self.server.amarok, method)(*params)
-            if self.server.debug >= 2: print response.toxml()
             
         except UnicodeDecodeError, err:
             errmsg="UnicodeDecodeError: %s" % err
             self.send_error(500, errmsg)
-            debug(errmsg)
+            self.server.debug("==> POST RESPONSE 500 %s" % errmsg)
             raise
         except RuntimeError, err:
             errmsg="RuntimeError: %s" % err
             self.send_error(500, errmsg)
-            debug(errmsg)
+            self.server.debug("==> POST RESPONSE 500 %s" % errmsg)
             raise
         except:
             errmsg = "Unexpected error: %s " % sys.exc_info()[0]
-            debug(errmsg)
             self.send_error(500, errmsg)
+            self.server.debug("==> POST RESPONSE 500 %s" % errmsg)
             raise
 
         else:
@@ -146,8 +137,8 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
             self.send_response(200, 'OK')
             self.send_header('Content-type', 'application/xml')
             self.end_headers()
-
-            if self.server.debug >=2 : print dom.toxml('utf-8')
+            
+            self.server.debug( "==> POST RESPONSE %s" % dom.toxml('utf-8'))
             self.wfile.write(dom.toxml('utf-8'))
 
 
@@ -155,12 +146,10 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         """Serves the extension and covers images"""
         
-        debug("========= GET REQUEST =========")
-        if self.server.debug : print selt.path
+        self.server.debug( "<== GET REQUEST %s" % self.path)
             
         if self.path== '/image.png':
             imagePath=self.server.amarok.coverImage()
-            if self.server.debug : print "IMAGE: ", imagePath
             try:
                 f = open(imagePath, "r")
             except IOError:
@@ -177,11 +166,14 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             shutil.copyfileobj(f, self.wfile)
             f.close()
+            self.server.debug( "==> GET RESPONSE file %s" % imagePath)
             
         else:
             """Serve  the extension"""
             try:
-                f = open(sys.path[0]+os.sep+"xul-amarok.xpi", "r")
+                file=sys.path[0]+os.sep+"xul-amarok.xpi"
+                self.server.debug( "serving extension" % file)
+                f = open(file, "r")
             except IOError:
                 self.send_error(404, "File not found")
                 return None
@@ -190,7 +182,7 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
             (hostname, aliaslist, ipaddrlist) = socket.gethostbyaddr(host)
             message = 'XUL remote: Firefox extension install from %s' % hostname
             self.server.amarok.showMessage(message)
-            debug(message) 
+            self.server.debug(message) 
             
             self.send_response(200)
             self.send_header("Content-type", "application/x-xpinstall")
