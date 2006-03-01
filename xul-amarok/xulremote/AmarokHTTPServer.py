@@ -83,8 +83,7 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
         """notify amarok user for a new connexion"""
         (host, port) = self.client_address
         if host not in self.server.clients:
-            (hostname, aliaslist, ipaddrlist) = socket.gethostbyaddr(host)
-            self.server.amarok.showMessage('XUL remote: New connexion from %s' % hostname)
+            self.server.amarok.showMessage('XUL remote: New connexion from %s' % host)
             self.server.clients.append(host)
         
         """HTTP query parsing"""
@@ -179,8 +178,7 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
                 return None
     
             (host, port) = self.client_address
-            (hostname, aliaslist, ipaddrlist) = socket.gethostbyaddr(host)
-            message = 'XUL remote: Firefox extension install from %s' % hostname
+            message = 'XUL remote: Firefox extension install from %s' % host
             self.server.amarok.showMessage(message)
             self.server.debug(message) 
             

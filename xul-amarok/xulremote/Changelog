@@ -1,3 +1,6 @@
+0.7a - 2006-03-01
+- bugfix: non resolved IPs could not connect
+- no changes to extension
 
 0.7 - 2006-02-25
 - login/password authentication (HTTP Basic)
