@@ -5,7 +5,7 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         title="AmaroK remote"
         id="xul-amarok-main-window"
-        width="800"
+        width="900"
         height="600"
         onload="onLoad();">
 
@@ -13,12 +13,12 @@
 <script src="chrome://global/content/nsTransferable.js"/>
 
 
-<script type="application/x-javascript" src="chrome://xul-amarok/content/ajax.js"/>
-<script type="application/x-javascript" src="chrome://xul-amarok/content/player.js"/>
 <script type="application/x-javascript" src="chrome://xul-amarok/content/playlist.js"/>
+<script type="application/x-javascript" src="chrome://xul-amarok/content/player.js"/>
 <script type="application/x-javascript" src="chrome://xul-amarok/content/collectionBrowser.js"/>
 <script type="application/x-javascript" src="chrome://xul-amarok/content/dragndrop.js"/>
-<script type="application/x-javascript" src="chrome://xul-amarok/content/handlers.js"/>
+<script type="application/x-javascript" src="chrome://xul-amarok/content/ajax.js"/>
+<script type="application/x-javascript" src="chrome://xul-amarok/content/common.js"/>
 
 <hbox flex="1">
 
@@ -46,6 +46,7 @@
 <vbox flex="3">
     <tree id="playlist"
     	ondblclick="playTrack(this.currentIndex)"
+    	onkeyup="onPlaylistKeyPress(event)"
     	ondragover="nsDragAndDrop.dragOver(event,playlistObserver)"
 		ondragdrop="nsDragAndDrop.drop(event,playlistObserver)"
 		flex="3" enableColumnDrag="true">
@@ -65,17 +66,33 @@
             <splitter class="tree-splitter"/>
             <treecol id="Year" label="Year" flex="1" persist="width ordinal hidden"/>
             <splitter class="tree-splitter"/>
+            
             <treecol id="Length" label="Length" flex="1" persist="width ordinal hidden"/>
             <splitter class="tree-splitter"/>
+
+            <treecol id="Composer" label="Composer" hidden="true" flex="1" persist="width ordinal hidden"/>
+            <splitter class="tree-splitter"/>
+            
+            <treecol id="DiscNumber" label="DiscNumber" hidden="true" flex="1" persist="width ordinal hidden"/>
+            <splitter class="tree-splitter"/>
+            
             <treecol id="Bitrate" label="Bitrate" hidden="true" flex="1" persist="width ordinal hidden"/>
             <splitter class="tree-splitter"/>
+            
             <treecol id="Score" label="Score" hidden="true" flex="1" persist="width ordinal hidden"/>
             <splitter class="tree-splitter"/>
+            
             <treecol id="Rating" label="Rating" hidden="true" flex="1" persist="width ordinal hidden"/>
             <splitter class="tree-splitter"/>
+            
+            <treecol id="PlayCount" label="PlayCount" hidden="true" flex="1" persist="width ordinal hidden"/>
+            <splitter class="tree-splitter"/>
+            
 			<treecol id="Filename" label="Filename" hidden="true" flex="1" persist="width ordinal hidden"/>
             <splitter class="tree-splitter"/>
-            <treecol id="Filesize" label="Filesize" hidden="true" flex="1" persist="width ordinal hidden"/>
+            
+            <treecol id="Directory" label="Directory" hidden="true" flex="1" persist="width ordinal hidden"/>
+
         </treecols>
         <treechildren flex="1" />
     </tree>
@@ -110,7 +127,7 @@
     <label value="seek" />
     <vbox class="customSlider">
 		<spacer flex="2"/>
-		<slider	id="progressBar" style="width: 200px" maxpos="100" onmouseup="seek(this.getAttribute('curpos'))" >
+		<slider	id="progressBar" style="width: 120px" maxpos="100" onmouseup="seek(this.getAttribute('curpos'))" >
 		  <thumb /> 
 	    </slider> 
 	    <spacer flex="2"/>
@@ -119,7 +136,7 @@
     <label value="volume" />
     <vbox class="customSlider">
 		<spacer flex="2"/>
-		<slider	id="volumeBar" style="width: 100px" maxpos="100" onmouseup="setVolume(this.getAttribute('curpos'))" >
+		<slider	id="volumeBar" style="width: 70px" maxpos="100" onmouseup="setVolume(this.getAttribute('curpos'))" >
 		  <thumb /> 
 	    </slider> 
 	    <spacer flex="2"/>

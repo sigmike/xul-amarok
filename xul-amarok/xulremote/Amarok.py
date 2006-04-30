@@ -9,6 +9,10 @@ from xml.dom.minidom import parse, parseString
 
 debug_prefix = "[XUL remote DCOP ]"
 
+def dbescape(val):
+    val=val.replace("'","''") 
+    val=val.replace("\"","\\\"")
+    return val
 
 class Amarok:
     
@@ -137,13 +141,25 @@ class Amarok:
         return self.getPlaylist()
 
 
-    
+    def deleteTracks(self,ids):
+        ids=ids.split('||')
+        ids.sort(lambda x, y: int(y)-int(x))
+
+        for id in ids:
+            self.deleteTrack(id)
+        return self.getPlaylist()
+
+    def deleteTrack(self,id):
+        self.dcopCall('playlist', 'removeByIndex', id)
+
+
     #============== COLLECTION ==================
     
 
 
     def query(self,query):
         
+        self.debug("query: %s" % query)
         pp=os.popen("dcop amarok collection query \"%s\"" % query, 'r')
         results=[]
         for r in pp: 
@@ -160,7 +176,7 @@ class Amarok:
             query = """select distinct t.url from album al, artist ar, tags t 
                         where t.artist = ar.id and t.album = al.id 
                             and  al.name = '%s'
-                        order by t.track""" % escape(album)
+                        order by t.track""" % dbescape(album)
             
             urls=self.query(query)
             for url in urls: self.addTrack(url)
@@ -176,7 +192,7 @@ class Amarok:
             query = """select distinct t.url from album al, artist ar, tags t 
                         where t.artist = ar.id and t.album = al.id 
                             and ar.name = '%s'
-                        order by al.name , t.track""" % escape(artist)
+                        order by al.name , t.track""" % dbescape(artist)
             urls=self.query(query)
             for url in urls: self.addTrack(url)
 
@@ -190,7 +206,7 @@ class Amarok:
         query = """SELECT DISTINCT artist.name 
                        FROM tags INNER JOIN artist ON artist.id=tags.artist  
                        WHERE tags.sampler = 0 """
-        if search != '': query += """and artist.name like '%%%s%%'""" % escape(search)
+        if search != '': query += """and artist.name like '%%%s%%'""" % dbescape(search)
         query += " ORDER BY LOWER( artist.name )"
         
         artists =self.query(query)
@@ -202,9 +218,9 @@ class Amarok:
         for artist in artists:
             domArtist=domArtists.createElement('artist')
             try:
-                content=domArtists.createTextNode(unicode(artist,'utf-8'))
+                content=domArtists.createTextNode(unicode(artist,sys.getfilesystemencoding()))
             except UnicodeDecodeError, err:
-                debug("PROBLEM WITH ARTIST TAG %s : ERROR %s" % (artist, err))
+                self.debug("PROBLEM WITH ARTIST TAG %s : ERROR %s" % (artist, err))
                 pass
             else:
                 domArtist.appendChild(content)
@@ -221,14 +237,14 @@ class Amarok:
         else:
             query = """select distinct al.name from album al, artist ar, tags t 
                         where t.artist = ar.id and t.album = al.id and ar.name = '%s' 
-                        order by al.name""" % escape(artist)
+                        order by al.name""" % dbescape(artist)
 
         albums=self.query(query)
         
         domAlbums=parseString("<albums />")
         for album in albums:
             domAlbum=domAlbums.createElement('album')
-            content=domAlbums.createTextNode(unicode(album,'utf-8'))
+            content=domAlbums.createTextNode(unicode(album,sys.getfilesystemencoding()))
             domAlbum.appendChild(content)
             domAlbums.documentElement.appendChild(domAlbum)
         return domAlbums
@@ -240,12 +256,12 @@ class Amarok:
             query = """SELECT DISTINCT tags.title,tags.url
                         FROM tags INNER JOIN album ON album.id=tags.album INNER JOIN artist ON artist.id=tags.artist INNER JOIN year ON year.id=tags.year 
                         WHERE tags.sampler = 1 AND album.name = '%s'
-                        ORDER BY tags.track""" % album
+                        ORDER BY tags.track""" % dbescape(album)
         else:
             query = """select distinct t.title, t.url from album al, artist ar, tags t 
                     where t.artist = ar.id and t.album = al.id 
                         and ar.name = '%s' and al.name = '%s'
-                    order by t.track""" % (escape(artist),escape(album))
+                    order by t.track""" % (dbescape(artist),dbescape(album))
 
         tracks=self.query(query)
         
@@ -255,12 +271,12 @@ class Amarok:
             #artist
             if n % 2 == 0:
                 domTrack=domTracks.createElement('track')
-                content=domTracks.createTextNode(unicode(track,'utf-8'))
+                content=domTracks.createTextNode(unicode(track,sys.getfilesystemencoding()))
                 domTrack.appendChild(content)
                 domTracks.documentElement.appendChild(domTrack)
             #url
             else:
-                domTrack.setAttribute('url',unicode(track,'utf-8'))
+                domTrack.setAttribute('url',unicode(track,sys.getfilesystemencoding()))
             n=n+1
         return domTracks
 

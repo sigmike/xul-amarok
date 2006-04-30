@@ -3,7 +3,7 @@
 
 <prefwindow id="xul-amarok-configure"
             xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-            title="AmaroK connexion setup"
+            title="AmaroK remote setup"
             buttons="accept, cancel"
             type="prefwindow" >
 

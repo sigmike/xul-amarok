@@ -1,6 +1,6 @@
 
 <div align="center">
-	<h2>AmaroK XUL Remote 0.7</h2>
+	<h2>AmaroK XUL Remote 0.8</h2>
 	<p>Control AmaroK from any Firefox browser on your network.</p>
 	<p>This AmaroK script embeds a Firefox extension and a HTTP server</p>
 </div>
@@ -8,6 +8,7 @@
 <div><h4>INSTALL</h4>
 <ul>
 	<li>Download the archive, then install and run it with AmaroK script manager</li>
+	<li>You can also install find it in "Get more scripts" in AmaroK script manager</li>
 	<li>On the first launch, you will be prompted for some parameters:<br />
 		<b>interface</b> (optional): the IP adress of your network interface the server will listen on (empty means all)<br />
 		<b>port</b> (required): you can leave 8888 as a default<br />
@@ -25,7 +26,7 @@
 <ul>
 	<li>python &gt;= 2.3</li>
 	<li><b>pyqt</b> (python QT bindings)</li>
-	<li>AmaroK &gt;= 1.4 beta1</li>
+	<li>AmaroK &gt;= 1.4 beta</li>
 	<li>Firefox &gt;= 1.5</li>
 </ul>
 </div>
@@ -44,6 +45,20 @@
 
 <div><h4>CHANGELOG</h4>
 <ul>
+
+	<li><b>0.8 - 2006-04-30</b><br />
+	 - feature: delete tracks from playlist (press delete key)<br />
+	 - better playlist refreshing behaviour<br />
+     - more playlist columns<br />
+	 - bugfix: collection browser now works fine with sqlite<br />
+	 - bugfix: more robust handling of unicode/non-unicode locales
+	</li>
+
+	<li><b>0.7a - 2006-03-01</b><br />
+	- bugfix: non resolved IPs could not connect<br />
+	- no changes to extension
+	</li>
+
 	<li><b>0.7 - 2006-02-19</b><br />
 	- login/password authentication (HTTP Basic)<br />
 	- big changes on the script side, now a pyqt application<br />

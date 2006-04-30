@@ -6,7 +6,8 @@ var collectionObserver = {
     onDragStart: function (evt , transferData, action){
 		
 		var tree = evt.target.parentNode;
-				
+		if (!tree.view) return false;
+
 		var start = new Object();
 		var end = new Object();
 		var numRanges = tree.view.selection.getRangeCount();
@@ -77,10 +78,4 @@ var playlistObserver = {
 
 }
 
-
-function DUMP_obj (aObj) 
-{
-  for (var i in aObj)
-    dump("*** aObj[" + i + "] = " + aObj[i] + "\n");
-}
 

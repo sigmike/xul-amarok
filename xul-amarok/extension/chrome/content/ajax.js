@@ -1,22 +1,5 @@
 
 
-var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
-
-
-
-function checkPrefs()
-{
-	if (prefs.getCharPref("amarok.host")) return true;
-	
-	configure();
-	
-	if (prefs.getCharPref("amarok.host")) return true;
-	return false;
-}
-
-
-
-
 
 function amarokCall(method, handler, data)
 {

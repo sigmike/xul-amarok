@@ -1,5 +1,14 @@
 
-
+//handle the AJAX response
+function playerHandler(xml)
+{
+	elmt = xml.getElementsByTagName('index').item(0);
+	idx=elmt.firstChild.nodeValue;
+	pos = elmt.getAttribute('position');
+	
+    var pbar = document.getElementById('progressBar').setAttribute('curpos',pos);
+    return setPlaying(idx);
+}
 
 function play()
 {
@@ -44,22 +53,17 @@ function getPlaying()
 }
 
 
-function playerHandler(xml)
-{
-	elmt = xml.getElementsByTagName('index').item(0);
-	idx=elmt.firstChild.nodeValue;
-	pos = elmt.getAttribute('position');
-	
-    var pbar = document.getElementById('progressBar').setAttribute('curpos',pos);
-    return setPlaying(idx);
-}
 
 
-function viewCover()
+
+
+
+//handle the AJAX response
+function setVolumeHandler(xml)
 {
-	var host = prefs.getCharPref("amarok.host"); 
-	var port = prefs.getCharPref("amarok.port");
-	return window.open("http://"+host+":"+port+"/image.png",'coverwindow','chrome=no,width=300,height=300,resizable,centerscreen');
+	volume = xml.getElementsByTagName('volume').item(0).firstChild.nodeValue;
+	document.getElementById('volumeBar').setAttribute('curpos', volume);
+	return true;
 }
 
 
@@ -73,13 +77,15 @@ function getVolume()
 	return amarokCall('getVolume','setVolumeHandler','');
 }
 
-function setVolumeHandler(xml)
-{
-	volume = xml.getElementsByTagName('volume').item(0).firstChild.nodeValue;
-	document.getElementById('volumeBar').setAttribute('curpos', volume);
-	return true;
-}
 
+
+
+function viewCover()
+{
+	var host = prefs.getCharPref("amarok.host"); 
+	var port = prefs.getCharPref("amarok.port");
+	return window.open("http://"+host+":"+port+"/image.png",'coverwindow','chrome=no,width=300,height=300,resizable,centerscreen');
+}
 
 
 

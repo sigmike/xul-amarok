@@ -9,6 +9,12 @@
 	text-align: right;	
 }
 
+treechildren::-moz-tree-row(playing)
+{
+	background-color: #acf;
+}
+
+
 /* toolbar */
 
 toolbarbutton label{

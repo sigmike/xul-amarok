@@ -105,7 +105,10 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
             params=[]
             for key in inspect.getargspec(getattr(self.server.amarok, method))[0]:
                 if key != 'self':
-                    if key in self.args: params.append(self.args[key])
+                    if key in self.args: 
+                        param=unicode(self.args[key], 'utf-8')
+                        param=param.encode(sys.getfilesystemencoding())
+                        params.append(param)
                     else : params.append('')
 
             """Amarok DCOP call"""
@@ -115,17 +118,14 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
             errmsg="UnicodeDecodeError: %s" % err
             self.send_error(500, errmsg)
             self.server.debug("==> POST RESPONSE 500 %s" % errmsg)
-            raise
         except RuntimeError, err:
             errmsg="RuntimeError: %s" % err
             self.send_error(500, errmsg)
             self.server.debug("==> POST RESPONSE 500 %s" % errmsg)
-            raise
         except:
-            errmsg = "Unexpected error: %s " % sys.exc_info()[0]
+            errmsg = "Unexpected error, check AmaroK is running "
             self.send_error(500, errmsg)
             self.server.debug("==> POST RESPONSE 500 %s" % errmsg)
-            raise
 
         else:
             """build response"""
