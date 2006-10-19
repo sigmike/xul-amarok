@@ -1,3 +1,8 @@
+0.9 - 2006-05-08
+- feature: context menus on collection and playlist
+- feature: allowed connections from an IP addresses list
+- extension code rewrite
+
 0.8 - 2006-04-30
  - feature: delete tracks from playlist (press delete key)
  - better playlist refreshing behaviour

@@ -34,13 +34,16 @@ class AmarokHTTPServer(HTTPServer):
     def server_close(self):
         self.stop=True;
         
-        #send a fake request to loop serve_forever
+        #fake request to trigger handle_request
         (host,port)=self.server_address
-        conn = httplib.HTTPConnection("localhost:"+str(port))
-        conn.request("QUIT", "")
+        conn = httplib.HTTPConnection(host+":"+str(port))
+        conn.request("PING", "")
 
     def debug(self, message):
         if self.debugAJAX: print "%s %s" % (debug_prefix, message)
+        
+    def log(self, message):
+         sys.stderr.write("%s %s\n" % (debug_prefix , message))
 
 
 
@@ -80,10 +83,21 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
         
         if not self.checkAuth(): return False
 
-        """notify amarok user for a new connexion"""
         (host, port) = self.client_address
+        
+        """check if allowed host"""
+        if len(self.server.hosts) and host not in self.server.hosts:
+            msg='XUL remote: host %s not allowed' % host
+            self.server.log(msg)
+            self.server.amarok.showMessage(msg)
+            self.send_error(500, msg)
+            return False
+        
+        """notify amarok user for a new connexion"""
         if host not in self.server.clients:
-            self.server.amarok.showMessage('XUL remote: New connexion from %s' % host)
+            msg='XUL remote: New connexion from %s' % host
+            self.server.log(msg)
+            self.server.amarok.showMessage(msg)
             self.server.clients.append(host)
         
         """HTTP query parsing"""
@@ -96,9 +110,10 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
         del self.args['method']
 
         if method not in dir(self.server.amarok) or not callable(getattr(self.server.amarok, method)):
-            message='ERROR method %s not callable' % method
-            self.send_error(500,message)
-            return false
+            msg='method %s does not exist' % method
+            self.server.log(msg)
+            self.send_error(500,msg)
+            return False
             
     
         try:
@@ -116,16 +131,18 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
             
         except UnicodeDecodeError, err:
             errmsg="UnicodeDecodeError: %s" % err
+            self.server.log(errmsg)
             self.send_error(500, errmsg)
             self.server.debug("==> POST RESPONSE 500 %s" % errmsg)
         except RuntimeError, err:
             errmsg="RuntimeError: %s" % err
+            self.server.log(errmsg)
             self.send_error(500, errmsg)
             self.server.debug("==> POST RESPONSE 500 %s" % errmsg)
-        except:
-            errmsg = "Unexpected error, check AmaroK is running "
-            self.send_error(500, errmsg)
-            self.server.debug("==> POST RESPONSE 500 %s" % errmsg)
+        #except:
+        #    errmsg = "Unexpected error, check AmaroK is running "
+        #    self.send_error(500, errmsg)
+        #    self.server.debug("==> POST RESPONSE 500 %s" % errmsg)
 
         else:
             """build response"""
@@ -133,20 +150,31 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
             responseElmt = dom.documentElement
             if response: responseElmt.appendChild(response.documentElement)
 
-            self.send_response(200, 'OK')
-            self.send_header('Content-type', 'application/xml')
-            self.end_headers()
+            try: 
+                self.send_response(200, 'OK')
+                self.send_header('Content-type', 'application/xml')
+                self.end_headers()
             
-            self.server.debug( "==> POST RESPONSE %s" % dom.toxml('utf-8'))
-            self.wfile.write(dom.toxml('utf-8'))
-
+                self.server.debug( "==> POST RESPONSE %s" % dom.toxml('utf-8'))
+                self.wfile.write(dom.toxml('utf-8'))
+            except:
+                print "PROBLEM SENDING RESPONSE to : " + method
 
     
     def do_GET(self):
         """Serves the extension and covers images"""
         
         self.server.debug( "<== GET REQUEST %s" % self.path)
-            
+
+        (host, port) = self.client_address
+        
+        if len(self.server.hosts) and host not in self.server.hosts:
+            msg='XUL remote: host %s not allowed' % host
+            self.server.log(msg)
+            self.server.amarok.showMessage(msg)
+            self.send_error(500, msg)
+            return False
+        
         if self.path== '/image.png':
             imagePath=self.server.amarok.coverImage()
             try:
@@ -171,16 +199,14 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
             """Serve  the extension"""
             try:
                 file=sys.path[0]+os.sep+"xul-amarok.xpi"
-                self.server.debug( "serving extension %s" % file)
                 f = open(file, "r")
             except IOError:
                 self.send_error(404, "File not found")
                 return None
-    
-            (host, port) = self.client_address
-            message = 'XUL remote: Firefox extension install from %s' % host
+
+            message = 'XUL remote: Firefox extension download from %s' % host
+            self.server.log(message)
             self.server.amarok.showMessage(message)
-            self.server.debug(message) 
             
             self.send_response(200)
             self.send_header("Content-type", "application/x-xpinstall")
@@ -190,8 +216,5 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
             f.close()
 
 
- 
-    def do_QUIT(self):
+    def do_PING(self):
         pass
-        
-        

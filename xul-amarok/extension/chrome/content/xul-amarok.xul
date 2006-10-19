@@ -6,27 +6,36 @@
         title="AmaroK remote"
         id="xul-amarok-main-window"
         width="900"
-        height="600"
-        onload="onLoad();">
+        height="600">
 
-<script src="chrome://global/content/nsDragAndDrop.js"/>
-<script src="chrome://global/content/nsTransferable.js"/>
+<script type="application/x-javascript" src="chrome://global/content/nsDragAndDrop.js"/>
+<script type="application/x-javascript" src="chrome://global/content/nsTransferable.js"/>
 
 
 <script type="application/x-javascript" src="chrome://xul-amarok/content/playlist.js"/>
-<script type="application/x-javascript" src="chrome://xul-amarok/content/player.js"/>
 <script type="application/x-javascript" src="chrome://xul-amarok/content/collectionBrowser.js"/>
-<script type="application/x-javascript" src="chrome://xul-amarok/content/dragndrop.js"/>
-<script type="application/x-javascript" src="chrome://xul-amarok/content/ajax.js"/>
-<script type="application/x-javascript" src="chrome://xul-amarok/content/common.js"/>
+<script type="application/x-javascript" src="chrome://xul-amarok/content/xul-amarok.js"/>
+
+<popupset>
+  <popup id="collectionmenu">
+    <menuitem label="Append to playlist" oncommand="addSelectedCollectionItems();" />
+  </popup>
+  <popup id="playlistmenu" >
+    <menuitem label="Play" oncommand="XulRemote.playTrack(document.getElementById('playlist').currentIndex);" />
+    <menuitem label="Remove from playlist" oncommand="removeSelectedItems();" />
+  </popup>
+ 
+</popupset>
 
 <hbox flex="1">
 
     <vbox flex="1">
-        <textbox id="collectionFilter" oninput="getArtists(this.value);"/>
-        <tree flex="1" 
+        <textbox id="collectionFilter" oninput="collectionView.getArtists(this.value);"/>
+        
+        <tree flex="3" 
         	id="collectionBrowser" 
         	hidecolumnpicker="true" 
+        	context="collectionmenu"
         	ondraggesture="nsDragAndDrop.startDrag(event,collectionObserver)"
         	seltype="multiple">
         	
@@ -36,6 +45,10 @@
             </treecols>
             <treechildren flex="1"/>
         </tree>
+        
+        <splitter collapse="after" persist="state">
+		    <grippy/>
+		</splitter>
     </vbox>
 
 
@@ -45,8 +58,9 @@
 
 <vbox flex="3">
     <tree id="playlist"
-    	ondblclick="playTrack(this.currentIndex)"
+    	ondblclick="XulRemote.playTrack(this.currentIndex)"
     	onkeyup="onPlaylistKeyPress(event)"
+    	context="playlistmenu"
     	ondragover="nsDragAndDrop.dragOver(event,playlistObserver)"
 		ondragdrop="nsDragAndDrop.drop(event,playlistObserver)"
 		flex="3" enableColumnDrag="true">
@@ -101,16 +115,16 @@
 	<toolbox>
 	
 		<toolbar pack="end">
-		    <toolbarbutton id="cover" oncommand="viewCover()" tooltiptext="View cover" label="Cover" />
-		    <toolbarbutton id="prev" oncommand="prev()" tooltiptext="Previous track" label="Prev" />
-		    <toolbarbutton id="play" oncommand="play()" tooltiptext="Play" label="Play" />
-		    <toolbarbutton id="pause" oncommand="pause()" tooltiptext="Pause" label="Pause"  />
-	        <toolbarbutton id="stop" oncommand="stop()" tooltiptext="Stop" label="Stop"  />
-	        <toolbarbutton id="next" oncommand="next()" tooltiptext="Next track" label="Next"  />
+		    <toolbarbutton id="cover" oncommand="XulRemote.viewCover()" tooltiptext="View cover" label="Cover" />
+		    <toolbarbutton id="prev" oncommand="XulRemote.prev()" tooltiptext="Previous track" label="Prev" />
+		    <toolbarbutton id="play" oncommand="XulRemote.play()" tooltiptext="Play" label="Play" />
+		    <toolbarbutton id="pause" oncommand="XulRemote.pause()" tooltiptext="Pause" label="Pause"  />
+	        <toolbarbutton id="stop" oncommand="XulRemote.stop()" tooltiptext="Stop" label="Stop"  />
+	        <toolbarbutton id="next" oncommand="XulRemote.next()" tooltiptext="Next track" label="Next"  />
 
-	        <toolbarbutton id="clear" oncommand="clearPlaylist()" tooltiptext="Clear playlist" label="Clear" />
-	    	<toolbarbutton id="update" oncommand="refresh()" tooltiptext="Refresh playlist" label="Refresh" />
-	        <toolbarbutton id="config" oncommand="configure()" tooltiptext="Setup" label="Setup" />
+	        <toolbarbutton id="clear" oncommand="XulRemote.clearPlaylist()" tooltiptext="Clear playlist" label="Clear" />
+	    	<toolbarbutton id="update" oncommand="XulRemote.refresh()" tooltiptext="Refresh playlist" label="Refresh" />
+	        <toolbarbutton id="config" oncommand="XulRemote.configure()" tooltiptext="Setup" label="Setup" />
 		</toolbar>
 	</toolbox>
 	
@@ -122,12 +136,12 @@
 
 <statusbar id="status" persist="collapsed">
     
-    <label id="statusMessage" value="" flex="2" />
+    <label id="statusMessage" crop="end" value="" flex="2" />
 
     <label value="seek" />
     <vbox class="customSlider">
 		<spacer flex="2"/>
-		<slider	id="progressBar" style="width: 120px" maxpos="100" onmouseup="seek(this.getAttribute('curpos'))" >
+		<slider	id="progressBar" style="width: 120px" maxpos="100" onmouseup="XulRemote.seek(this.getAttribute('curpos'))" >
 		  <thumb /> 
 	    </slider> 
 	    <spacer flex="2"/>
@@ -136,7 +150,7 @@
     <label value="volume" />
     <vbox class="customSlider">
 		<spacer flex="2"/>
-		<slider	id="volumeBar" style="width: 70px" maxpos="100" onmouseup="setVolume(this.getAttribute('curpos'))" >
+		<slider	id="volumeBar" style="width: 70px" maxpos="100" onmouseup="XulRemote.setVolume(this.getAttribute('curpos'))" >
 		  <thumb /> 
 	    </slider> 
 	    <spacer flex="2"/>

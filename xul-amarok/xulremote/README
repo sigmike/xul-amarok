@@ -1,6 +1,6 @@
 
 <div align="center">
-	<h2>AmaroK XUL Remote 0.8</h2>
+	<h2>AmaroK XUL Remote 0.9</h2>
 	<p>Control AmaroK from any Firefox browser on your network.</p>
 	<p>This AmaroK script embeds a Firefox extension and a HTTP server</p>
 </div>
@@ -46,6 +46,12 @@
 <div><h4>CHANGELOG</h4>
 <ul>
 
+	<li><b>0.9 - 2006-05-08</b><br />
+	- feature: context menus on collection and playlist<br />
+	- feature: allowed connections from an IP addresses list<br />
+	- extension code rewrite
+	</li>
+	
 	<li><b>0.8 - 2006-04-30</b><br />
 	 - feature: delete tracks from playlist (press delete key)<br />
 	 - better playlist refreshing behaviour<br />

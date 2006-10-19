@@ -1,11 +1,15 @@
 
+var atomService = Components.classes["@mozilla.org/atom-service;1"].getService(Components.interfaces.nsIAtomService);
 
-var aserv=Components.classes["@mozilla.org/atom-service;1"].getService(Components.interfaces.nsIAtomService);
+
 
 var playlistView = {
 
     rowCount : 0,
     visibleData : [],
+    
+    aserv : atomService,
+    
     
     getCellText : function(row,column){ 
     	if (this.visibleData[row]) return this.visibleData[row][column.id]; 
@@ -23,7 +27,7 @@ var playlistView = {
     
     getRowProperties: function(row,props){
     	//the playing track gets the 'playing' property
-    	if (this.visibleData[row]['playing'] == true) props.AppendElement(aserv.getAtom("playing"));
+    	if (this.visibleData[row]['playing'] == true) props.AppendElement(this.aserv.getAtom("playing"));
     },
     
     getCellProperties: function(row,col,props){},
@@ -32,16 +36,31 @@ var playlistView = {
     cycleHeader: function cycleHeader(col, elem) { }
 };
 
-function initPlaylist()
-{
-	document.getElementById('playlist').view = playlistView;
-	getPlaylist();
+
+
+var playlistObserver = {
+	
+	getSupportedFlavours : function () {
+	    var flavours = new FlavourSet();
+	    flavours.appendFlavour('amarok/browseritems');
+	    return flavours;
+	  },
+
+	onDragOver: function (evt,flavour,session){},
+	  
+	onDrop: function (evt,dropdata,session){
+		addSelectedCollectionItems();
+	}
+
 }
 
 
 
-//refresh the playlist
-function playlistHandler(xmlplaylist)
+
+
+
+//set the playlist contents
+function setPlaylist(xmlplaylist)
 {
 	pl=xmlplaylist.getElementsByTagName('playlist').item(0);
 
@@ -91,6 +110,9 @@ function playlistHandler(xmlplaylist)
 }
 
 
+
+
+//hilight the current track and updates status bar
 function setPlaying(idx)
 {
 	var tree=document.getElementById('playlist');
@@ -124,7 +146,6 @@ function setPlaying(idx)
 	}
 	
 	var message = 'Playing "'+ title+'" by "'+ artist+'" on "' + album + '"';
-	if (message.length > 60) message=message.slice(0,60)+'...';
 	
 	document.getElementById('statusMessage').setAttribute('value',message);
 	document.getElementById('statusMessage').setAttribute('class','');
@@ -133,61 +154,6 @@ function setPlaying(idx)
 }
 
 
-
-
-function getPlaylist()
-{
-	return amarokCall('getPlaylist','playlistHandler','');
-}
-
-function clearPlaylist()
-{
-	return amarokCall('clearPlaylist','playlistHandler','');
-}
-
-
-function addTracks(urls)
-{
-    if (urls.length == 0) return false;
-	return amarokCall('addTracks','playlistHandler','urls='+encodeURIComponent(urls.join('||')));
-}
-
-
-function rsort(a,b)
-{
-	return b - a;
-}
-
-
-function deleteTracks(tracksIds)
-{
-    if (tracksIds.length == 0) return false;
-    
-    //remove playlist entries
-    tracksIds.sort(rsort);
-	for (var i=0; i<tracksIds.length; i++) {
-		playlistView.visibleData.splice(tracksIds[i],1);
-	}
-	playlistView.rowCount = playlistView.visibleData.length;
-	playlistView.treeBox.rowCountChanged(0, -tracksIds.length);
-	playlistView.selection.clearSelection();
-	
-	return amarokCall('deleteTracks','playlistHandler','ids='+encodeURIComponent(tracksIds.join('||')));
-}
-
-function addAlbums(albums)
-{
-    if (albums.length == 0) return false;
-	return amarokCall('addAlbums','playlistHandler','albums='+encodeURIComponent(albums.join('||')));
-}
-
-
-
-function addArtists(artists)
-{
-    if (artists.length == 0) return false;
-	return amarokCall('addArtists','playlistHandler','artists='+encodeURIComponent(artists.join('||')));
-}
 
 
 
@@ -203,8 +169,23 @@ function showError(message)
 function onPlaylistKeyPress(event)
 {
 	if (event.keyCode != 46) return false;
-	
-	//get selected tracks to remove
+	return removeSelectedItems();
+}
+
+
+
+
+
+function rsort(a,b)
+{
+	return b - a;
+}
+
+
+
+function removeSelectedItems()
+{
+	//get selected tracks
 	var start = new Object();
 	var end = new Object();
 	var tracksIds=new Array();
@@ -216,7 +197,50 @@ function onPlaylistKeyPress(event)
 			tracksIds.push(trackId);
 	    }
 	}
+
+    if (tracksIds.length == 0) return false;
+    
+    //remove playlist entries
+    tracksIds.sort(rsort);
+	for (var i=0; i<tracksIds.length; i++) {
+		playlistView.visibleData.splice(tracksIds[i],1);
+	}
+	playlistView.rowCount = playlistView.visibleData.length;
+	playlistView.treeBox.rowCountChanged(0, -tracksIds.length);
+	playlistView.selection.clearSelection();
 	
-	return deleteTracks(tracksIds);
+	return XulRemote.deleteTracks(tracksIds);
 }
+
+
+
+
+
+
+//handle the AJAX response
+function playerHandler(xml)
+{
+	elmt = xml.getElementsByTagName('index').item(0);
+	idx=elmt.firstChild.nodeValue;
+	pos = elmt.getAttribute('position');
+	
+    var pbar = document.getElementById('progressBar').setAttribute('curpos',pos);
+    return setPlaying(idx);
+}
+
+
+
+
+
+//handle the AJAX response
+function setVolumeHandler(xml)
+{
+	volume = xml.getElementsByTagName('volume').item(0).firstChild.nodeValue;
+	document.getElementById('volumeBar').setAttribute('curpos', volume);
+	return true;
+}
+
+
+
+
 

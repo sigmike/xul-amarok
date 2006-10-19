@@ -75,6 +75,7 @@ var collectionView = {
 			}
 			if (deletecount) {
 				this.visibleData.splice(idx + 1, deletecount);
+				this.rowCount=this.visibleData.length;
 				this.treeBox.rowCountChanged(idx + 1, -deletecount);
 			}
 		}
@@ -85,116 +86,163 @@ var collectionView = {
 			this.currentIdx = idx;
 			
 			var thisLevel = this.getLevel(idx);
-			dump(thisLevel);
 			if (thisLevel == 0) {
 				var artist = this.visibleData[idx][0];
-				getAlbums(artist)
+				this.getAlbums(artist)
 			}
 			if (thisLevel == 1) {
 				var pIdx = this.getParentIndex(idx);
 				var artist = this.visibleData[pIdx][0];
 				var album = this.visibleData[idx][0];
-				getTracks(artist,album);
+				this.getTracks(artist,album);
 			}
 		}
 		return true;
 	},
     getRowProperties: function(row,props){},
     getCellProperties: function(row,col,props){},
-    getColumnProperties: function(colid,col,props){}
-}
+    getColumnProperties: function(colid,col,props){},
+    
+    
+    
+    
+    
+	getArtists: function(search)
+	{
+	    return XulRemote.amarokCall('artists','collectionView.setArtists','search='+encodeURIComponent(search));
+	},
+
+    setArtists: function(xmlartists)
+	{
+		var artists = xmlartists.getElementsByTagName('artist');
+	
+		var initData = [];
+		for (i=0; i < artists.length; i++) {
+			if (artists.item(i).firstChild) var artist = artists.item(i).firstChild.nodeValue;
+			else var artist='unknown';
+	        initData[i] = [artist,0, true,false,null];
+	    }
+	
+		var prevCount=this.rowCount;
+	
+		this.visibleData = initData;
+		this.rowCount = initData.length;
+		this.treeBox.rowCountChanged(0, initData.length - prevCount);
+	},
+	
+	
+	
+	getAlbums: function(artist)
+	{
+	    if (artist=='Unknown') artist='';
+		return XulRemote.amarokCall('albums','collectionView.setAlbums','artist='+encodeURIComponent(artist));
+	},
+	
+	setAlbums: function(xmlalbums)
+	{
+		var idx = this.currentIdx;
+	
+	    var albums = xmlalbums.getElementsByTagName('album');
+	
+		for (var i = 0; i < albums.length; i++) {
+			if (albums.item(i).firstChild) album = albums.item(i).firstChild.nodeValue;
+			else album='Unknown';
+			this.visibleData.splice(idx + i + 1, 0, [album, 1,true, false,null]);
+		}
+	
+		this.rowCount=collectionView.visibleData.length;
+		this.treeBox.rowCountChanged(idx + 1, albums.length);
+	},
 
 
-
-function initCollectionBrowser()
-{
-	document.getElementById('collectionBrowser').view = collectionView;
-	getArtists('');
-}
-
-
-
-function getArtists(search)
-{
-    amarokCall('artists','getArtistsHandler','search='+encodeURIComponent(search));
-}
-
-
-function getArtistsHandler(xmlartists)
-{
-	var artists = xmlartists.getElementsByTagName('artist');
-
-	var initData = [];
-	for (i=0; i < artists.length; i++) {
-		if (artists.item(i).firstChild) var artist = artists.item(i).firstChild.nodeValue;
-		else var artist='unknown';
-        initData[i] = [artist,0, true,false,null];
-    }
-
-	var prevCount=collectionView.rowCount;
-
-	collectionView.visibleData = initData;
-	collectionView.rowCount = initData.length;
-	collectionView.treeBox.rowCountChanged(0, initData.length - prevCount);
-}
-
-
-
-
-function getAlbums(artist)
-{
-    if (artist=='Unknown') artist='';
-	amarokCall('albums','getAlbumsHandler','artist='+encodeURIComponent(artist));
-}
-
-
-
-function getAlbumsHandler(xmlalbums)
-{
-	var idx = collectionView.currentIdx;
-
-    var albums = xmlalbums.getElementsByTagName('album');
-
-	for (var i = 0; i < albums.length; i++) {
-		if (albums.item(i).firstChild) album = albums.item(i).firstChild.nodeValue;
-		else album='Unknown';
-		collectionView.visibleData.splice(idx + i + 1, 0, [album, 1,true, false,null]);
+	
+	getTracks: function(artist,album)
+	{
+	    if (album=='Unknown') album='';
+	    return XulRemote.amarokCall('tracks','collectionView.setTracks','artist='+encodeURIComponent(artist)+'&album='+encodeURIComponent(album));
+	},
+	
+	setTracks: function(xmltracks)
+	{
+		var idx = this.currentIdx ;
+	
+	    var tracks = xmltracks.getElementsByTagName('track');
+	
+		for (var i=0; i < tracks.length; i++) {
+			var trackElmt = tracks.item(i);
+			var track=trackElmt.firstChild.nodeValue;
+			var url=trackElmt.getAttribute('url');
+			
+			this.visibleData.splice(idx + 1 + i , 0, [track, 2, false, false, url]);
+	
+		}
+		this.rowCount=collectionView.visibleData.length;
+		this.treeBox.rowCountChanged(idx + 1, tracks.length);
 	}
 
-	collectionView.rowCount=collectionView.visibleData.length;
-	collectionView.treeBox.rowCountChanged(idx + 1, albums.length);
 }
 
 
 
-
-
-
-
-
-function getTracks(artist,album)
-{
-    if (album=='Unknown') album='';
-    amarokCall('tracks','getTracksHandler','artist='+encodeURIComponent(artist)+'&album='+encodeURIComponent(album));
-}
-
-function getTracksHandler(xmltracks)
-{
-	var idx = collectionView.currentIdx ;
-
-    var tracks = xmltracks.getElementsByTagName('track');
-
-	for (var i=0; i < tracks.length; i++) {
-		var trackElmt = tracks.item(i);
-		var track=trackElmt.firstChild.nodeValue;
-		var url=trackElmt.getAttribute('url');
+var collectionObserver = {
+    
+    onDragStart: function (evt , transferData, action){
 		
-		collectionView.visibleData.splice(idx + 1 + i , 0, [track, 2, false, false, url]);
+		var tree = evt.target.parentNode;
+		if (!tree.view) return false;
 
+		transferData.data= new TransferData();
+		transferData.data.addDataForFlavour('amarok/browseritems',"foobar");
+		return true;
 	}
-	collectionView.rowCount=collectionView.visibleData.length;
-	collectionView.treeBox.rowCountChanged(idx + 1, tracks.length);
+};
+
+
+
+
+
+
+
+
+
+
+
+function addSelectedCollectionItems()
+{
+	var tracks=new Array();
+	var albums=new Array();
+	var artists=new Array();
+
+	var start = new Object();
+	var end = new Object();
+	var numRanges = collectionView.selection.getRangeCount();
+	
+	for (var t=0; t<numRanges; t++){
+		collectionView.selection.getRangeAt(t,start,end);
+		for (var v=start.value; v<=end.value; v++){
+
+			var level = collectionView.getLevel(v);
+			if (level == 2)  {
+				var url = collectionView.visibleData[v][4];
+				tracks.push(url);
+			}
+	    	if (level == 1)  {
+				var album = collectionView.visibleData[v][0];
+				albums.push(album);
+			}	
+			if (level == 0)  {
+				var artist = collectionView.visibleData[v][0];
+				artists.push(artist);
+			}
+		}
+	}
+
+	if (tracks.length)  XulRemote.addTracks(tracks);
+	if (albums.length)  XulRemote.addAlbums(albums);
+	if (artists.length) XulRemote.addArtists(artists);
+
 }
+
 
 
 

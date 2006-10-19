@@ -5,9 +5,8 @@
 ############################################################################
 # Python-Qt script for amaroK XUL Remote
 # (c) 2006 Matthieu Bedouet <mbedouet@gmail.com>
-# (c) 2005 Mark Kretschmann <markey@web.de>
 #
-# Depends on: Python 2.2, PyQt
+# Depends on: Python >= 2.2, PyQt
 ############################################################################
 #
 # This program is free software; you can redistribute it and/or modify
@@ -22,6 +21,8 @@ import os
 import sys
 import threading
 import signal
+import socket
+
 from time import sleep
 
 try:
@@ -39,7 +40,7 @@ configFile='xulremote.ini'
 
 def debug( message ):
     """ Prints debug message to stdout """
-    print "%s %s" % (debug_prefix , message)
+    sys.stderr.write("%s %s\n" % (debug_prefix , message))
 
 
 class ConfigFileError(Exception):
@@ -62,11 +63,33 @@ class ConfigDialog( XULremoteConfigDialog ):
             self.port.setText(config.get('Listen','port'))
             self.login.setText(config.get('HttpAuth','login'))
             self.password.setText(config.get('HttpAuth','passwd'))
-
+            
+            if config.has_section('Hosts'):
+                hosts=config.get('Hosts','allowed').split()
+                for host in hosts: self.allowedHosts.insertItem(host)
+            
         except:
             debug("error reading config, using defaults")
+            ip=socket.getaddrinfo(socket.gethostname(), None)[0][4][0]
+            self.interface.setText(ip)
             self.port.setText('8888')
 
+
+    def addAllowedHost(self):
+        host=str(self.host.text())
+        parts=host.split(".")
+        if len(parts) != 4: return False
+        for part in parts:
+            if not part.isdigit(): return False
+
+        self.allowedHosts.insertItem(host)
+        self.host.setText('')
+        
+    
+    def remAllowedHost(self):
+        current=self.allowedHosts.currentItem()
+        if current >= 0:
+            self.allowedHosts.removeItem(current)
 
 
     def accept( self ):
@@ -75,22 +98,33 @@ class ConfigDialog( XULremoteConfigDialog ):
             cfile = file( configFile, 'w' )
     
             config = ConfigParser.SafeConfigParser()
+            
             config.add_section( "Listen" )
             config.set( "Listen", "interface", self.interface.text().ascii() )
             config.set( "Listen", "port", self.port.text().ascii() )
+            
             config.add_section( "HttpAuth" )
             config.set( "HttpAuth", "login", self.login.text().ascii() )
             config.set( "HttpAuth", "passwd", self.password.text().ascii() )
+            
             config.add_section( "Debug" )
             config.set( "Debug", "debugAJAX", 'off' )
             config.set( "Debug", "debugDCOP", 'off' )
+            
+            hosts=[]
+            for idx in range(self.allowedHosts.count()):
+                hosts.append(str(self.allowedHosts.text(idx)))
+
+            config.add_section( "Hosts" )
+            config.set( "Hosts", "allowed", ' '.join(hosts) )
+
             config.write( cfile )
             cfile.close()
             
         except:
             debug("error saving config")
             raise ConfigFileError, "error saving config file"
-        
+
         else:
             debug( configFile+" saved")
             self.emit(PYSIGNAL("configChanged"), ())
@@ -110,6 +144,10 @@ class AmarokHttpdThread(threading.Thread):
             
             self.interface=config.get('Listen','interface')
             self.port=config.getint('Listen','port')
+            if config.has_section('Hosts'):
+                self.hosts=config.get('Hosts','allowed').split()
+            else:
+                self.hosts=[]
             self.login=config.get('HttpAuth','login')
             self.passwd=config.get('HttpAuth','passwd')
             self.debugAJAX=config.getboolean('Debug','debugAJAX')
@@ -123,6 +161,7 @@ class AmarokHttpdThread(threading.Thread):
         self.httpd = AmarokHTTPServer((self.interface,self.port))
         self.httpd.login   = self.login
         self.httpd.passwd  = self.passwd
+        self.httpd.hosts  = self.hosts
         self.httpd.debugAJAX = self.debugAJAX
         self.httpd.amarok.debugDCOP = self.debugDCOP
 
@@ -204,14 +243,22 @@ class XULRemote( QApplication ):
     def customEvent( self, notification ):
         
         string = QString(notification.string)
-        if string.contains( "configure" ):  self.configure()
+        if string.contains( "configure" ):
+            self.configure()
+        """if string.contains( "volumeChange" ):
+            self.configure()
+        if string.contains( "engineStateChange" ):
+            self.configure()
+        if string.contains( "trackChange" ):
+            self.configure()
+        else: debug(notification.string)"""
 
-
-
+        
     def configure(self):
         self.cnf = ConfigDialog()
         self.connect(self.cnf, PYSIGNAL("configChanged"), self.startHttpd)
         self.cnf.show()
+
 
     def quit(self):
         debug("shutdown")

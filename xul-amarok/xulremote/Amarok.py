@@ -4,7 +4,7 @@ import sys,os
 import string, codecs
 import time
 from urllib import unquote, quote
-from re import escape
+import re
 from xml.dom.minidom import parse, parseString
 
 debug_prefix = "[XUL remote DCOP ]"
@@ -21,7 +21,7 @@ class Amarok:
         
     def dcopCall(self, interface, method, params=''):
 
-        cmd="dcop amarok %s %s %s" % (interface, method, escape(str(params)) )
+        cmd="dcop amarok %s %s %s" % (interface, method, re.escape(str(params)) )
         self.debug("calling %s" % cmd )
     
         p=os.popen(cmd)
@@ -34,7 +34,7 @@ class Amarok:
             return res
         
     def showMessage(self,msg):
-        self.dcopCall('playlist', 'popupMessage', msg)
+        self.dcopCall('playlist', 'shortStatusMessage', msg)
         
     #============== PLAYER ==================
     
@@ -143,6 +143,8 @@ class Amarok:
 
     def deleteTracks(self,ids):
         ids=ids.split('||')
+
+        #start from the last not to offset positions
         ids.sort(lambda x, y: int(y)-int(x))
 
         for id in ids:
@@ -168,19 +170,42 @@ class Amarok:
         self.debug("query results: %s" % results)
         return results
     
-    
+    def getDevices(self):
+        query = """select id, lastmointpoint from devices"""
+        devices=self.query(query)
+        
+        n=0
+        id=''
+        devs={'-1': '/'}
+        for val in devices:
+            if n%2==0:
+                id=val
+            else:
+               devs[id]=val
+            n=n+1
+        return devs
+                
     
     def addAlbums(self,albums):
         for album in albums.split('||'):
             urls=[]
-            query = """select distinct t.url from album al, artist ar, tags t 
+            query = """select distinct t.deviceid, t.url from album al, artist ar, tags t 
                         where t.artist = ar.id and t.album = al.id 
                             and  al.name = '%s'
                         order by t.track""" % dbescape(album)
             
             urls=self.query(query)
-            for url in urls: self.addTrack(url)
-            
+            devices=self.getDevices()
+            n=0
+            path=''
+            for val in urls: 
+               
+                if n % 2 == 0: path=devices[val]
+                else:
+                    print path+val
+                    self.addTrack(path+val)
+                n=n+1
+
         time.sleep(0.8)
         return self.getPlaylist()
 
@@ -189,12 +214,23 @@ class Amarok:
         for artist in artists.split('||'):
 
             urls=[]
-            query = """select distinct t.url from album al, artist ar, tags t 
+            query = """select distinct t.deviceid,t.url from album al, artist ar, tags t 
                         where t.artist = ar.id and t.album = al.id 
                             and ar.name = '%s'
                         order by al.name , t.track""" % dbescape(artist)
             urls=self.query(query)
-            for url in urls: self.addTrack(url)
+            
+            urls=self.query(query)
+            devices=self.getDevices()
+            n=0
+            path=''
+            for val in urls: 
+               
+                if n % 2 == 0: path=devices[val]
+                else:
+                    print path+val
+                    self.addTrack(path+val)
+                n=n+1
 
         time.sleep(0.8)
         return self.getPlaylist()
@@ -253,30 +289,34 @@ class Amarok:
 
     def tracks(self,artist,album):
         if artist == 'Various artists':
-            query = """SELECT DISTINCT tags.title,tags.url
+            query = """SELECT DISTINCT tags.title,tags.deviceid, tags.url
                         FROM tags INNER JOIN album ON album.id=tags.album INNER JOIN artist ON artist.id=tags.artist INNER JOIN year ON year.id=tags.year 
                         WHERE tags.sampler = 1 AND album.name = '%s'
                         ORDER BY tags.track""" % dbescape(album)
         else:
-            query = """select distinct t.title, t.url from album al, artist ar, tags t 
+            query = """select distinct t.title, t.deviceid, t.url from album al, artist ar, tags t 
                     where t.artist = ar.id and t.album = al.id 
                         and ar.name = '%s' and al.name = '%s'
                     order by t.track""" % (dbescape(artist),dbescape(album))
 
         tracks=self.query(query)
+        devices=self.getDevices()
         
         domTracks=parseString("<tracks />")
         n=0
+        path=''
         for track in tracks:
             #artist
-            if n % 2 == 0:
+            if n % 3 == 0:
                 domTrack=domTracks.createElement('track')
                 content=domTracks.createTextNode(unicode(track,sys.getfilesystemencoding()))
                 domTrack.appendChild(content)
                 domTracks.documentElement.appendChild(domTrack)
             #url
+            elif (n-1) % 3 == 0 :
+                path=devices[track]
             else:
-                domTrack.setAttribute('url',unicode(track,sys.getfilesystemencoding()))
+                domTrack.setAttribute('url',unicode(path+track,sys.getfilesystemencoding()))
             n=n+1
         return domTracks
 

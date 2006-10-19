@@ -3,27 +3,46 @@
 
 <prefwindow id="xul-amarok-configure"
             xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-            title="AmaroK remote setup"
-            buttons="accept, cancel"
-            type="prefwindow" >
+            title="AmaroK remote setup">
 
-<prefpane id="pane1" >
-    <preferences>
-      <preference id="host" name="amarok.host" type="string" instantApply="true"/>
-      <preference id="port" name="amarok.port" type="string" instantApply="true"/>
-      <preference id="login" name="amarok.login"  type="string" instantApply="true"/>
-      <preference id="passwd" name="amarok.passwd" type="string" instantApply="true"/>
-    </preferences>
+<preferences>
+  <preference id="host" name="amarok.host" type="string"/>
+  <preference id="port" name="amarok.port" type="string"/>
+  <preference id="login" name="amarok.login"  type="string"/>
+  <preference id="passwd" name="amarok.passwd" type="string"/>
+  <preference id="delay" name="amarok.delay" type="int"/>
+</preferences>
+
+
+<prefpane id="pane1" label="AmaroK remote setup" >
     
-    <hbox>
-		<label value="Host:" control="thost"/><textbox flex="2" id="thost" preference="host"/>
-		<label value="Port:" control="tport"/><textbox flex="1" size="6" id="tport" preference="port"/>
-	</hbox>
-	<spacer />
-    <vbox align="center">
-		<label value="Login:"    control="tlogin"/><textbox flex="1" id="tlogin"  preference="login"/>
-		<label value="Password:" control="tpasswd"/><textbox flex="1" type="password" id="tpasswd" preference="passwd"/>
+	<vbox align="center">
+	
+	    <hbox align="center">
+			<label value="Host:" control="thost"/><textbox flex="2" id="thost" preference="host"/>
+			<label value="Port:" control="tport"/><textbox flex="1" size="6" id="tport" preference="port"/>
+		</hbox>
+		<spacer />
+		
+	    <hbox align="center">
+			<label value="Login:"    control="tlogin"/><textbox flex="1" id="tlogin"  preference="login"/>
+		</hbox>
+		<spacer />
+		
+	    <hbox align="center">
+			<label value="Password:" control="tpasswd"/><textbox flex="1" type="password" id="tpasswd" preference="passwd"/>
+		</hbox>
+		<spacer />
+		
+	    <hbox align="center">
+			<label flex="1" value="Refresh every" control="idelay"/>
+			<textbox size="4" id="idelay"  preference="delay"/>
+			<label flex="1" value="seconds"/>
+		</hbox>
+		
 	</vbox>
 </prefpane>
+
+
 
 </prefwindow>
