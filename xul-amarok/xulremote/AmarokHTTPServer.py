@@ -36,8 +36,9 @@ class AmarokHTTPServer(HTTPServer):
         
         #fake request to trigger handle_request
         (host,port)=self.server_address
+        if host == '': host='localhost'
         conn = httplib.HTTPConnection(host+":"+str(port))
-        conn.request("PING", "")
+        conn.request("PING", "/")
 
     def debug(self, message):
         if self.debugAJAX: print "%s %s" % (debug_prefix, message)

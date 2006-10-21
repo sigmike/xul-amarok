@@ -171,7 +171,7 @@ class Amarok:
         return results
     
     def getDevices(self):
-        query = """select id, lastmointpoint from devices"""
+        query = "select id, lastmountpoint from devices"
         devices=self.query(query)
         
         n=0

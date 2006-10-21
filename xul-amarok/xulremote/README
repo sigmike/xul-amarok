@@ -26,8 +26,8 @@
 <ul>
 	<li>python &gt;= 2.3</li>
 	<li><b>pyqt</b> (python QT bindings)</li>
-	<li>AmaroK &gt;= 1.4 beta</li>
-	<li>Firefox &gt;= 1.5</li>
+	<li>AmaroK &gt;= 1.4.3</li>
+	<li>Firefox &gt;= 1.5 or 2</li>
 </ul>
 </div>
 
@@ -38,7 +38,7 @@
 	<li>collection browser with filtering, ordered by artist/album</li>
 	<li>drag and drop tracks, album and artists to the playlist</li>
 	<li>cover view for current track</li>
-	<li>access restricted by login/password</li>
+	<li>access restricted by login/password or/and by IP address</li>
 </ul>
 </div>
 
@@ -48,7 +48,8 @@
 
 	<li><b>0.9 - 2006-05-08</b><br />
 	- feature: context menus on collection and playlist<br />
-	- feature: allowed connections from an IP addresses list<br />
+	- feature: restrict connections from an IP addresses list<br />
+	- works with firefox2, Amarok 1.4.3<br />
 	- extension code rewrite
 	</li>
 	

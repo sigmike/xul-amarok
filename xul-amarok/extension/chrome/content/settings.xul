@@ -5,17 +5,19 @@
             xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
             title="AmaroK remote setup">
 
-<preferences>
-  <preference id="host" name="amarok.host" type="string"/>
-  <preference id="port" name="amarok.port" type="string"/>
-  <preference id="login" name="amarok.login"  type="string"/>
-  <preference id="passwd" name="amarok.passwd" type="string"/>
-  <preference id="delay" name="amarok.delay" type="int"/>
-</preferences>
+
 
 
 <prefpane id="pane1" label="AmaroK remote setup" >
     
+    <preferences>
+	  <preference id="host" name="amarok.host" type="string" instantApply="true" />
+	  <preference id="port" name="amarok.port" type="string" instantApply="true" />
+	  <preference id="login" name="amarok.login"  type="string" instantApply="true" />
+	  <preference id="passwd" name="amarok.passwd" type="string" instantApply="true" />
+	  <preference id="delay" name="amarok.delay" type="int" instantApply="true" />
+	</preferences>
+
 	<vbox align="center">
 	
 	    <hbox align="center">
