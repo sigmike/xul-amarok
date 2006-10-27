@@ -201,9 +201,7 @@ class Amarok:
             for val in urls: 
                
                 if n % 2 == 0: path=devices[val]
-                else:
-                    print path+val
-                    self.addTrack(path+val)
+                else: self.addTrack(path+os.sep+val)
                 n=n+1
 
         time.sleep(0.8)
@@ -229,7 +227,7 @@ class Amarok:
                 if n % 2 == 0: path=devices[val]
                 else:
                     print path+val
-                    self.addTrack(path+val)
+                    self.addTrack(path+os.sep+val)
                 n=n+1
 
         time.sleep(0.8)
@@ -316,7 +314,7 @@ class Amarok:
             elif (n-1) % 3 == 0 :
                 path=devices[track]
             else:
-                domTrack.setAttribute('url',unicode(path+track,sys.getfilesystemencoding()))
+                domTrack.setAttribute('url',unicode(path+os.sep+track,sys.getfilesystemencoding()))
             n=n+1
         return domTracks
 
