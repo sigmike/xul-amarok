@@ -45,8 +45,11 @@
 
 <div><h4>CHANGELOG</h4>
 <ul>
+	<li><b>0.9a - 2006-11-03</b><br />
+    - fix bug [ 1585368 ] Wrong file name transmitted
+    </li>
 
-	<li><b>0.9 - 2006-05-08</b><br />
+	<li><b>0.9 - 2006-10-21</b><br />
 	- feature: context menus on collection and playlist<br />
 	- feature: restrict connections from an IP addresses list<br />
 	- works with firefox2, Amarok 1.4.3<br />
