@@ -52,7 +52,8 @@ class AmarokHTTPRequestHandler(BaseHTTPRequestHandler):
 
 
     def log_message(self, format, *args):
-        self.server.debug("%s - - [%s] %s" % (self.address_string(), self.log_date_time_string(), format%args)  )
+        (host, port) = self.client_address
+        self.server.debug("%s - - [%s] %s" % (host, self.log_date_time_string(), format%args)  )
 
 
     def checkAuth(self):

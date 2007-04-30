@@ -1,3 +1,9 @@
+0.9b - 2007-04-30
+minor fixes:
+- Default server IP address to 127.0.0.1
+- No more client hostname lookup
+- new window for cover display
+
 0.9a - 2006-11-03
 - fix bug [ 1585368 ] Wrong file name transmitted
 

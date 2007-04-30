@@ -115,3 +115,8 @@ statusbar {
 	color: red;
 	font-weight: bold;
 }
+
+#coverimage {
+	width: 100px;
+	height: 100px;
+}

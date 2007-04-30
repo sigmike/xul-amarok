@@ -28,6 +28,7 @@ from time import sleep
 try:
     from qt import *
 except:
+    print "PyQt (Qt bindings for Python) is required for this script."
     os.popen( "kdialog --sorry 'PyQt (Qt bindings for Python) is required for this script.'" )
     raise
 
@@ -70,7 +71,7 @@ class ConfigDialog( XULremoteConfigDialog ):
             
         except:
             debug("error reading config, using defaults")
-            ip=socket.getaddrinfo(socket.gethostname(), None)[0][4][0]
+            ip='127.0.0.1'
             self.interface.setText(ip)
             self.port.setText('8888')
 
@@ -215,13 +216,13 @@ class XULRemote( QApplication ):
     def __init__( self, args ):
         QApplication.__init__( self, args )
 
+        self.httpd=None
+        self.startHttpd()
 
         # Start separate thread for reading data from stdin
         self.stdinReader=readStdin(self)
         self.stdinReader.start()
         
-        self.httpd=None
-        self.startHttpd()
 
 
     def startHttpd(self):
@@ -245,14 +246,8 @@ class XULRemote( QApplication ):
         string = QString(notification.string)
         if string.contains( "configure" ):
             self.configure()
-        """if string.contains( "volumeChange" ):
-            self.configure()
-        if string.contains( "engineStateChange" ):
-            self.configure()
-        if string.contains( "trackChange" ):
-            self.configure()
-        else: debug(notification.string)"""
-
+        if string.contains( "quit" ):
+            self.quit()
         
     def configure(self):
         self.cnf = ConfigDialog()

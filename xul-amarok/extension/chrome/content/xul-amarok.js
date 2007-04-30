@@ -78,13 +78,11 @@ var XulRemote = {
 
 	
 	//AJAX CALL
-	amarokCall: function(method, handler, data)
+	amarokCall: function(method, handlerMethodName, data)
 	{
 		var req = new XMLHttpRequest();
 	
 		req.open('POST', 'http://'+this.host+':'+this.port, true);
-		//alert('http://'+this.host+':'+this.port);
-		req.handler = handler;
 		
 		req.onload = function(event) {
 	
@@ -97,7 +95,7 @@ var XulRemote = {
 			
 			response=self.responseXML;
 			if (response) {
-				eval( self.handler + '\(response\)');
+				eval(  handlerMethodName + '\(response\)');
 				return true;
 			}
 			else return false;	
@@ -233,7 +231,8 @@ var XulRemote = {
 	
 	viewCover: function()
 	{
-		return window.open("http://"+this.host+":"+this.port+"/image.png",'coverwindow','chrome=no,width=300,height=300,resizable,centerscreen');
+		var url="http://"+this.host+":"+this.port+"/image.png";
+		window.openDialog("chrome://xul-amarok/content/showcover.xul","settings", "chrome,modal",url);
 	}
 
 	

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://xul-amarok/skin/xul-amarok.css" type="text/css"?>
+
+
+<dialog id="xul-amarok-showcover" title="Album cover"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        buttons="accept"
+        ondialogaccept="window.close();" >
+        
+<image id="coverimage" src="" />
+
+<script>
+	document.getElementById('coverimage').setAttribute('src',window.arguments[0] );
+</script>
+
+</dialog>

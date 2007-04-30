@@ -1,6 +1,6 @@
 
 <div align="center">
-	<h2>AmaroK XUL Remote 0.9</h2>
+	<h2>AmaroK XUL Remote 0.9b</h2>
 	<p>Control AmaroK from any Firefox browser on your network.</p>
 	<p>This AmaroK script embeds a Firefox extension and a HTTP server</p>
 </div>
@@ -45,6 +45,13 @@
 
 <div><h4>CHANGELOG</h4>
 <ul>
+	<li><b>0.9b - 2007-04-30</b><br />
+    - minor fixes:
+       Default server IP address to 127.0.0.1
+       No more client hostname lookup
+       new window for cover display
+    </li>
+    
 	<li><b>0.9a - 2006-11-03</b><br />
     - fix bug [ 1585368 ] Wrong file name transmitted
     </li>

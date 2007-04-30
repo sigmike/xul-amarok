@@ -290,12 +290,12 @@ class Amarok:
             query = """SELECT DISTINCT tags.title,tags.deviceid, tags.url
                         FROM tags INNER JOIN album ON album.id=tags.album INNER JOIN artist ON artist.id=tags.artist INNER JOIN year ON year.id=tags.year 
                         WHERE tags.sampler = 1 AND album.name = '%s'
-                        ORDER BY tags.track""" % dbescape(album)
+                        ORDER BY tags.discnumber, tags.track""" % dbescape(album)
         else:
             query = """select distinct t.title, t.deviceid, t.url from album al, artist ar, tags t 
                     where t.artist = ar.id and t.album = al.id 
                         and ar.name = '%s' and al.name = '%s'
-                    order by t.track""" % (dbescape(artist),dbescape(album))
+                    order by t.discnumber, t.track""" % (dbescape(artist),dbescape(album))
 
         tracks=self.query(query)
         devices=self.getDevices()
