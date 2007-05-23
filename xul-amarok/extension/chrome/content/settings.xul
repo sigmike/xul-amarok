@@ -16,6 +16,7 @@
 	  <preference id="login" name="amarok.login"  type="string" instantApply="true" />
 	  <preference id="passwd" name="amarok.passwd" type="string" instantApply="true" />
 	  <preference id="delay" name="amarok.delay" type="int" instantApply="true" />
+	  <preference id="openintab" name="amarok.openintab" type="bool" instantApply="true" />
 	</preferences>
 
 	<vbox align="center">
@@ -40,6 +41,10 @@
 			<label flex="1" value="Refresh every" control="idelay"/>
 			<textbox size="4" id="idelay"  preference="delay"/>
 			<label flex="1" value="seconds"/>
+		</hbox>
+		
+		<hbox align="center">
+			<checkbox label="Open in a tab instead of a window" preference="openintab"/>
 		</hbox>
 		
 	</vbox>

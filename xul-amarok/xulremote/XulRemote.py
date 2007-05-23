@@ -223,7 +223,10 @@ class XULRemote( QApplication ):
         self.stdinReader=readStdin(self)
         self.stdinReader.start()
         
-
+    
+    def saveState(self,sessionmanager):
+        # script is started by amarok, not by KDE's session manager
+        sessionmanager.setRestartHint(QSessionManager.RestartNever)
 
     def startHttpd(self):
         

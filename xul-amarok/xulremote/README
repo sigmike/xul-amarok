@@ -1,6 +1,6 @@
 
 <div align="center">
-	<h2>AmaroK XUL Remote 0.9b</h2>
+	<h2>AmaroK XUL Remote 1.0</h2>
 	<p>Control AmaroK from any Firefox browser on your network.</p>
 	<p>This AmaroK script embeds a Firefox extension and a HTTP server</p>
 </div>
@@ -45,10 +45,15 @@
 
 <div><h4>CHANGELOG</h4>
 <ul>
+	<li><b>1.0 - 2007-05-24</b><br />
+	- new option to open the remote in a tab<br />
+	- disable launch by KDE session manager (closes #1614228)
+    </li>
+    
 	<li><b>0.9b - 2007-04-30</b><br />
-    - minor fixes:
-       Default server IP address to 127.0.0.1
-       No more client hostname lookup
+    - minor fixes:<br />
+       Default server IP address to 127.0.0.1<br />
+       No more client hostname lookup<br />
        new window for cover display
     </li>
     

@@ -5,4 +5,5 @@ pref("amarok.port", '8888');
 pref("amarok.login", '');
 pref("amarok.passwd", '');
 pref("amarok.delay", 10);
+pref("amarok.openintab", false);
 

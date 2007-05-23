@@ -1,3 +1,7 @@
+1.0 - 2007-05-24
+- new option to open the remote in a tab
+- disable launch by KDE session manager (closes #1614228)
+
 0.9b - 2007-04-30
 minor fixes:
 - Default server IP address to 127.0.0.1
